@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.Mindfeat" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Cards auf dem Startbildschirm -->
+    <style name="Widget.Mindfeat.Card"
+        parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Schrift für Überschriften und Funktionsbezeichnungen -->
+    <style name="TextAppearance.Mindfeat.CardTitel">
+        <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Allgemeine Textgestaltung -->
+    <style name="TextAppearance.Mindfeat.Body" parent="TextAppearance.Mindfeat" />
+
+</resources>

@@ -1,0 +1,14 @@
+# Generierte Gradle- und Build-Dateien
+.gradle/
+**/build/
+
+# Lokale Android-Studio-Einstellungen
+.idea/
+*.iml
+
+# Lokale SDK-Konfiguration
+local.properties
+
+# Betriebssystemdateien
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MINDFEAT</string>
+    <string name="app_untertitel">mindful eating</string>
+
+    <string name="alternativtext_rezepte">Rezeptsammlung öffnen</string>
+    <string name="menutext_rezepte">Rezepte</string>
+
+    <string name="alternativtext_plan">Essensplan öffnen</string>
+    <string name="menutext_plan">Essensplan</string>
+
+    <string name="alternativtext_liste">Einkaufsliste öffnen</string>
+    <string name="menutext_liste">Einkaufsliste</string>
+
+    <string name="statistik_oeffnen">Statistik öffnen</string>
+
+</resources>

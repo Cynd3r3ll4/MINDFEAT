@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.MINDFEAT" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Allgemeine Schriftart -->
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+
+        <!-- Farben (heller Modus) -->
+        <item name="colorPrimary">@color/mindfeat_brown</item>
+        <item name="colorOnPrimary">@color/mindfeat_beige</item>
+
+        <item name="colorSurface">@color/mindfeat_beige</item>
+        <item name="colorOnSurface">@color/mindfeat_brown</item>
+
+        <item name="android:windowBackground">@color/mindfeat_beige</item>
+        <item name="android:statusBarColor">@color/mindfeat_beige</item>
+        <item name="android:navigationBarColor">@color/mindfeat_beige</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.MINDFEAT" parent="Base.Theme.MINDFEAT" />
+</resources>
