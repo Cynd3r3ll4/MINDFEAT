@@ -37,6 +37,12 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+
+    // Room-Datenbank
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    // Unit- und Android-Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
