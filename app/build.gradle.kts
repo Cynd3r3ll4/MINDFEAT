@@ -41,6 +41,7 @@ dependencies {
     // Room-Datenbank
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+    androidTestAnnotationProcessor(libs.room.compiler)
 
     // Unit- und Android-Tests
     testImplementation(libs.junit)
