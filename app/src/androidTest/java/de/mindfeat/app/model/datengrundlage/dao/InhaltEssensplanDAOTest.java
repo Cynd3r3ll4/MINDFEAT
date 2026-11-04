@@ -155,14 +155,19 @@ public class InhaltEssensplanDAOTest {
         assertNull(inhalt);
     }
 
-    // Dieselbe Rezeptzuordnung am selben Tag nicht doppelt speichern
+    // Dasselbe Rezept kann mehrfach am selben Tag eingeplant werden
     @Test
-    public void doppelteZuordnungAmGleichenTagNichtMoeglich() {
+    public void mehrfachesEinplanenDesGleichenRezeptsAmGleichenTagIstMoeglich() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gulasch");
         inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
-        InhaltEssensplan doppelt = new InhaltEssensplan(essensplanId, rezeptId, "2026-11-02");
-        assertThrows(RuntimeException.class, () -> inhaltEssensplanDAO.einfuegen(doppelt));
+        inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.nachEssensplanIdAbrufen(essensplanId);
+        assertEquals(2, inhalte.size());
+        assertEquals(rezeptId, inhalte.get(0).getRezeptId());
+        assertEquals(rezeptId, inhalte.get(1).getRezeptId());
+        assertEquals("2026-11-02", inhalte.get(0).getDatum());
+        assertEquals("2026-11-02", inhalte.get(1).getDatum());
     }
 
     // Beim Löschen eines Essensplans dessen Einträge mitlöschen

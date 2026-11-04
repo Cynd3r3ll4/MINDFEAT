@@ -1,6 +1,7 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -84,9 +85,9 @@ public class ZutatDAOTest {
         zutatDAO.einfuegen(new Zutat("Äpfel"));
         List<Zutat> zutaten = zutatDAO.alleAbrufen();
         assertEquals(3, zutaten.size());
-        assertEquals("Äpfel", zutaten.get(0).getName());
-        assertEquals("Kartoffeln", zutaten.get(1).getName());
-        assertEquals("Zucchini", zutaten.get(2).getName());
+        assertEquals("Kartoffeln", zutaten.get(0).getName());
+        assertEquals("Zucchini", zutaten.get(1).getName());
+        assertEquals("Äpfel", zutaten.get(2).getName());
     }
 
     // Eine Zutat kann anhand ihres Namens abgerufen werden
@@ -112,5 +113,12 @@ public class ZutatDAOTest {
     public void nichtVorhandeneZutatAbrufen() {
         Zutat zutat = zutatDAO.nachIdAbrufen(999);
         assertNull(zutat);
+    }
+
+    // Doppelte Zutatennamen auch bei unterschiedlicher Groß- und Kleinschreibung verhindern
+    @Test(expected = SQLiteConstraintException.class)
+    public void doppeltenNamenNichtEinfuegen() {
+        zutatDAO.einfuegen(new Zutat("Kartoffeln"));
+        zutatDAO.einfuegen(new Zutat("KARTOFFELN"));
     }
 }

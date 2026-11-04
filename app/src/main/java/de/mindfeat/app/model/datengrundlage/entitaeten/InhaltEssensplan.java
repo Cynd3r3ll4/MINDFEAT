@@ -25,11 +25,7 @@ import java.time.LocalDate;
         },
         indices = {
                 @Index(value = "essensplanId"),
-                @Index(value = "rezeptId"),
-                @Index(
-                        value = {"essensplanId", "datum", "rezeptId"},
-                        unique = true
-                )
+                @Index(value = "rezeptId")
         }
 )
 
