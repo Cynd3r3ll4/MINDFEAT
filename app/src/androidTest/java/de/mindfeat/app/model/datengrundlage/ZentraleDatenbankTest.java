@@ -43,7 +43,7 @@ public class ZentraleDatenbankTest {
 
     // Datenbank nach dem Test schließen
     @After
-    public void datenbankSchließen() {
+    public void datenbankSchliessen() {
         if (datenbank != null) {
             datenbank.close();
         }
