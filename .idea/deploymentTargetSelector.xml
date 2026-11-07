@@ -19,6 +19,23 @@
           </targets>
         </DialogSelection>
       </SelectionState>
+      <SelectionState runConfigName="EinkaufslistenbeitragDAOTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection>
+          <targets>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=RZCTC0XBQ7N" />
+              </handle>
+            </Target>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\thor0\.android\avd\Medium_Phone.avd" />
+              </handle>
+            </Target>
+          </targets>
+        </DialogSelection>
+      </SelectionState>
       <SelectionState runConfigName="ZentraleDatenbankTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection>
@@ -36,7 +53,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="ZutatDAOTest">
+      <SelectionState runConfigName="ZentraleDatenbankMigrationTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection>
           <targets>
@@ -53,42 +70,8 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="Tests in 'de.mindfeat.app.model.datengrundlage.dao'">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=RZCTC0XBQ7N" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\thor0\.android\avd\Medium_Phone.avd" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
-      </SelectionState>
-      <SelectionState runConfigName="RezeptVermittlerTest">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=RZCTC0XBQ7N" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\thor0\.android\avd\Medium_Phone.avd" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
-      </SelectionState>
-      <SelectionState runConfigName="EssensplanVermittlerTest">
-        <option name="selectionMode" value="DROPDOWN" />
+      <SelectionState runConfigName="All Tests">
+        <option name="selectionMode" value="DIALOG" />
         <DialogSelection>
           <targets>
             <Target type="DEFAULT_BOOT">

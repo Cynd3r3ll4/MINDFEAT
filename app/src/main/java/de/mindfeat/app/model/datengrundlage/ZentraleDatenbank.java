@@ -5,7 +5,11 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import de.mindfeat.app.model.datengrundlage.dao.EinkaufslistenbeitragDAO;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenbeitrag;
 import de.mindfeat.app.model.datengrundlage.dao.EinkaufslistenelementDAO;
 import de.mindfeat.app.model.datengrundlage.dao.EssensplanDAO;
 import de.mindfeat.app.model.datengrundlage.dao.InhaltEssensplanDAO;
@@ -36,9 +40,10 @@ import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
                 Zubereitungsschritt.class,
                 Essensplan.class,
                 InhaltEssensplan.class,
-                Einkaufslistenelement.class
+                Einkaufslistenelement.class,
+                Einkaufslistenbeitrag.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 public abstract class ZentraleDatenbank extends RoomDatabase {
@@ -46,7 +51,6 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
     private static volatile ZentraleDatenbank instanz;
 
     // Zugriff auf die einzelnen DAOs bereitstellen
-
     public abstract RezeptDAO rezeptDAO();
 
     public abstract ZutatDAO zutatDAO();
@@ -65,6 +69,8 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
 
     public abstract EinkaufslistenelementDAO einkaufslistenelementDAO();
 
+    public abstract EinkaufslistenbeitragDAO einkaufslistenbeitragDAO();
+
 
     // Eine zentrale Datenbankinstanz für die gesamte App bereitstellen
 
@@ -72,10 +78,42 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
         if (instanz == null) {
             synchronized (ZentraleDatenbank.class) {
                 if (instanz == null) {
-                    instanz = Room.databaseBuilder(context.getApplicationContext(), ZentraleDatenbank.class, "mindfeat_datenbank").build();
+                    instanz = Room.databaseBuilder(context.getApplicationContext(), ZentraleDatenbank.class, "mindfeat_datenbank").addMigrations(MIGRATION_1_2).build();
                 }
             }
         }
         return instanz;
     }
+
+    // Migration von Datenbankversion 1 auf 2
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `einkaufslistenbeitraege` (" +
+                            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "`einkaufslistenelementId` INTEGER NOT NULL, " +
+                            "`essensplanId` INTEGER, " +
+                            "`menge` REAL, " +
+                            "FOREIGN KEY(`einkaufslistenelementId`) " +
+                            "REFERENCES `einkaufslistenelemente`(`id`) " +
+                            "ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                            "FOREIGN KEY(`essensplanId`) " +
+                            "REFERENCES `essensplaene`(`id`) " +
+                            "ON UPDATE NO ACTION ON DELETE CASCADE)");
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS " +
+                            "`index_einkaufslistenbeitraege_einkaufslistenelementId` " +
+                            "ON `einkaufslistenbeitraege` (`einkaufslistenelementId`)");
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS " +
+                            "`index_einkaufslistenbeitraege_essensplanId` " +
+                            "ON `einkaufslistenbeitraege` (`essensplanId`)");
+            database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS " +
+                            "`index_einkaufslistenbeitraege_einkaufslistenelementId_essensplanId` " +
+                            "ON `einkaufslistenbeitraege` " +
+                            "(`einkaufslistenelementId`, `essensplanId`)");
+        }
+    };
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
+import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenbeitrag;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenelement;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
 import de.mindfeat.app.model.datengrundlage.entitaeten.InhaltEssensplan;
@@ -62,6 +63,7 @@ public class ZentraleDatenbankTest {
         assertNotNull(datenbank.essensplanDAO());
         assertNotNull(datenbank.inhaltEssensplanDAO());
         assertNotNull(datenbank.einkaufslistenelementDAO());
+        assertNotNull(datenbank.einkaufslistenbeitragDAO());
     }
 
     // Integrationstests
@@ -100,8 +102,17 @@ public class ZentraleDatenbankTest {
         int essensplanId = (int) datenbank.essensplanDAO().einfuegen(essensplan);
         datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04"));
 
-        // Eine Zutat zusätzlich auf die Einkaufsliste setzen
-        datenbank.einkaufslistenelementDAO().einfuegen(new Einkaufslistenelement(paprikaId, 2.0, "Stück", false));
+        // Einkaufslistenelement anlegen
+        Einkaufslistenelement einkaufslistenelement = new Einkaufslistenelement(paprikaId, 2.0, "Stück", false);
+        int einkaufslistenelementId = (int)
+                datenbank.einkaufslistenelementDAO().einfuegen(einkaufslistenelement);
+
+        // Einkaufslistenbeitrag für den Essensplan anlegen
+        Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag(einkaufslistenelementId, essensplanId, 2.0);
+        datenbank.einkaufslistenbeitragDAO().einfuegen(beitrag);
+
+        // Prüfen, ob der Beitrag gespeichert wurde
+        assertNotNull(datenbank.einkaufslistenbeitragDAO());
 
         // Prüfen, ob das Rezept korrekt gespeichert wurde
         Rezept gespeichertesRezept = datenbank.rezeptDAO().nachIdAbrufen(rezeptId);
@@ -115,7 +126,6 @@ public class ZentraleDatenbankTest {
 
         // Prüfen, ob die Kategoriezuordnung vorhanden ist
         List<RezeptKategorie> rezeptKategorien = datenbank.rezeptKategorieDAO().nachRezeptIdAbrufen(rezeptId);
-
         assertEquals(1, rezeptKategorien.size());
         assertEquals(kategorieId, rezeptKategorien.get(0).getKategorieId());
 
