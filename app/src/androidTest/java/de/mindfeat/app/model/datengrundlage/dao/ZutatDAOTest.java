@@ -1,12 +1,10 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 
-import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 
 import org.junit.After;
@@ -24,22 +22,21 @@ import static org.junit.Assert.assertNotNull;
 
 public class ZutatDAOTest {
 
-    private ZutatDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private ZutatDAO zutatDAO;
 
     // Eine In-Memory-Datenbank für die Tests erstellen
     @Before
     public void setUp() {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, ZutatDAOTestDatenbank.class).allowMainThreadQueries().build();
-        zutatDAO = datenbank.zutatDAO();
+        testDatenbank = new TestDatenbank();
+        zutatDAO = testDatenbank.getDatenbank().zutatDAO();
     }
 
     // Die Datenbank nach jedem Test schließen
     @After
     public void tearDown() {
-        if (datenbank != null) {
-            datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
         }
     }
 

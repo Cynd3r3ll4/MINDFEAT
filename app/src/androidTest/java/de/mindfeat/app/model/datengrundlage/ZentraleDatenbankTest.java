@@ -1,10 +1,6 @@
 package de.mindfeat.app.model.datengrundlage;
 
-import android.content.Context;
-
-import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,20 +29,21 @@ import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 
 public class ZentraleDatenbankTest {
 
+    private TestDatenbank testDatenbank;
     private ZentraleDatenbank datenbank;
 
     // Testdatenbank pro test erstellen
     @Before
     public void datenbankErstellen() {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, ZentraleDatenbank.class).allowMainThreadQueries().build();
+        testDatenbank = new TestDatenbank();
+        datenbank = testDatenbank.getDatenbank();
     }
 
     // Datenbank nach dem Test schließen
     @After
     public void datenbankSchliessen() {
-        if (datenbank != null) {
-            datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
         }
     }
 

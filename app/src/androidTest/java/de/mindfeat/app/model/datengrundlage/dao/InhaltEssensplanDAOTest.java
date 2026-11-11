@@ -1,11 +1,8 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
-
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
 import de.mindfeat.app.model.datengrundlage.entitaeten.InhaltEssensplan;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
@@ -19,12 +16,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+
 
 @RunWith(AndroidJUnit4.class)
 public class InhaltEssensplanDAOTest {
 
-    private InhaltEssensplanDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private EssensplanDAO essensplanDAO;
     private RezeptDAO rezeptDAO;
     private InhaltEssensplanDAO inhaltEssensplanDAO;
@@ -32,17 +29,18 @@ public class InhaltEssensplanDAOTest {
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, InhaltEssensplanDAOTestDatenbank.class).allowMainThreadQueries().build();
-        essensplanDAO = datenbank.essensplanDAO();
-        rezeptDAO = datenbank.rezeptDAO();
-        inhaltEssensplanDAO = datenbank.inhaltEssensplanDAO();
+        testDatenbank = new TestDatenbank();
+        essensplanDAO = testDatenbank.getDatenbank().essensplanDAO();
+        rezeptDAO = testDatenbank.getDatenbank().rezeptDAO();
+        inhaltEssensplanDAO = testDatenbank.getDatenbank().inhaltEssensplanDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Einen Essensplan für die Testdatenbank erstellen

@@ -1,11 +1,8 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
-
-import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptZutat;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
@@ -25,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class RezeptZutatDAOTest {
 
-    private RezeptZutatDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private RezeptDAO rezeptDAO;
     private ZutatDAO zutatDAO;
     private RezeptZutatDAO rezeptZutatDAO;
@@ -33,18 +30,17 @@ public class RezeptZutatDAOTest {
     // Eine In-Memory-Datenbank für die Tests erstellen
     @Before
     public void setUp() {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, RezeptZutatDAOTestDatenbank.class).allowMainThreadQueries().build();
-        rezeptDAO = datenbank.rezeptDAO();
-        zutatDAO = datenbank.zutatDAO();
-        rezeptZutatDAO = datenbank.rezeptZutatDAO();
+        testDatenbank = new TestDatenbank();
+        rezeptDAO = testDatenbank.getDatenbank().rezeptDAO();
+        zutatDAO = testDatenbank.getDatenbank().zutatDAO();
+        rezeptZutatDAO = testDatenbank.getDatenbank().rezeptZutatDAO();
     }
 
     // Die Datenbank nach jedem Test schließen
     @After
     public void tearDown() {
-        if (datenbank != null) {
-            datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
         }
     }
 

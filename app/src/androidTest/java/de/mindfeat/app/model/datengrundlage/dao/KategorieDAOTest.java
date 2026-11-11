@@ -1,12 +1,10 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Kategorie;
 
 import org.junit.After;
@@ -24,21 +22,22 @@ import static org.junit.Assert.assertNotNull;
 
 public class KategorieDAOTest {
 
-    private KategorieDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private KategorieDAO kategorieDAO;
 
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, KategorieDAOTestDatenbank.class).allowMainThreadQueries().build();
-        kategorieDAO = datenbank.kategorieDAO();
+        testDatenbank = new TestDatenbank();
+        kategorieDAO = testDatenbank.getDatenbank().kategorieDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Prüfen, ob eine Kategorie gespeichert und anhand ihrer ID abgerufen werden kann

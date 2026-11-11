@@ -1,12 +1,10 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zubereitungsschritt;
 
@@ -24,23 +22,24 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(AndroidJUnit4.class)
 public class ZubereitungsschrittDAOTest {
 
-    private ZubereitungsschrittDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private RezeptDAO rezeptDAO;
     private ZubereitungsschrittDAO zubereitungsschrittDAO;
 
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, ZubereitungsschrittDAOTestDatenbank.class).allowMainThreadQueries().build();
-        rezeptDAO = datenbank.rezeptDAO();
-        zubereitungsschrittDAO = datenbank.zubereitungsschrittDAO();
+        testDatenbank = new TestDatenbank();
+        rezeptDAO = testDatenbank.getDatenbank().rezeptDAO();
+        zubereitungsschrittDAO = testDatenbank.getDatenbank().zubereitungsschrittDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Hilfsmethode zum Erstellen eines gespeicherten Rezepts

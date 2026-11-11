@@ -1,11 +1,8 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
-
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenbeitrag;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenelement;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
@@ -25,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class EinkaufslistenbeitragDAOTest {
 
-    private EinkaufslistenbeitragDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private EinkaufslistenbeitragDAO einkaufslistenbeitragDAO;
     private EinkaufslistenelementDAO einkaufslistenelementDAO;
     private EssensplanDAO essensplanDAO;
@@ -34,19 +31,18 @@ public class EinkaufslistenbeitragDAOTest {
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, EinkaufslistenbeitragDAOTestDatenbank.class).allowMainThreadQueries().build();
-        einkaufslistenbeitragDAO = datenbank.einkaufslistenbeitragDAO();
-        einkaufslistenelementDAO = datenbank.einkaufslistenelementDAO();
-        essensplanDAO = datenbank.essensplanDAO();
-        zutatDAO = datenbank.zutatDAO();
+        testDatenbank = new TestDatenbank();
+        einkaufslistenbeitragDAO = testDatenbank.getDatenbank().einkaufslistenbeitragDAO();
+        einkaufslistenelementDAO = testDatenbank.getDatenbank().einkaufslistenelementDAO();
+        essensplanDAO = testDatenbank.getDatenbank().essensplanDAO();
+        zutatDAO = testDatenbank.getDatenbank().zutatDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        if (datenbank != null) {
-            datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
         }
     }
 

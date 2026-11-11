@@ -5,12 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.content.Context;
-
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenelement;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 
@@ -24,23 +21,28 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class EinkaufslistenelementDAOTest {
 
-    private EinkaufslistenelementDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
+    private EinkaufslistenbeitragDAO einkaufslistenbeitragDAO;
     private EinkaufslistenelementDAO einkaufslistenelementDAO;
+    private EssensplanDAO essensplanDAO;
     private ZutatDAO zutatDAO;
 
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, EinkaufslistenelementDAOTestDatenbank.class).allowMainThreadQueries().build();
-        einkaufslistenelementDAO = datenbank.einkaufslistenelementDAO();
-        zutatDAO = datenbank.zutatDAO();
+        testDatenbank = new TestDatenbank();
+        einkaufslistenbeitragDAO = testDatenbank.getDatenbank().einkaufslistenbeitragDAO();
+        einkaufslistenelementDAO = testDatenbank.getDatenbank().einkaufslistenelementDAO();
+        essensplanDAO = testDatenbank.getDatenbank().essensplanDAO();
+        zutatDAO = testDatenbank.getDatenbank().zutatDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Eine Zutat erstellen und ihre generierte ID zurückgeben

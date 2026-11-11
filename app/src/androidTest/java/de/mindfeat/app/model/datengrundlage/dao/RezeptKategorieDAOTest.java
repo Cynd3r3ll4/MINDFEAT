@@ -1,12 +1,10 @@
 package de.mindfeat.app.model.datengrundlage.dao;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Kategorie;
 import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptKategorie;
@@ -26,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class RezeptKategorieDAOTest {
 
-    private RezeptKategorieDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private RezeptDAO rezeptDAO;
     private KategorieDAO kategorieDAO;
     private RezeptKategorieDAO rezeptKategorieDAO;
@@ -34,17 +32,18 @@ public class RezeptKategorieDAOTest {
     // Eine neue In-Memory-Datenbank vor jedem Test erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, RezeptKategorieDAOTestDatenbank.class).allowMainThreadQueries().build();
-        rezeptDAO = datenbank.rezeptDAO();
-        kategorieDAO = datenbank.kategorieDAO();
-        rezeptKategorieDAO = datenbank.rezeptKategorieDAO();
+        testDatenbank = new TestDatenbank();
+        rezeptDAO = testDatenbank.getDatenbank().rezeptDAO();
+        kategorieDAO = testDatenbank.getDatenbank().kategorieDAO();
+        rezeptKategorieDAO = testDatenbank.getDatenbank().rezeptKategorieDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Hilfsmethode zum Erstellen eines gespeicherten Rezepts

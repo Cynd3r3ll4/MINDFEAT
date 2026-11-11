@@ -4,12 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
-import android.content.Context;
-
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
 
 import org.junit.After;
@@ -22,21 +19,22 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class EssensplanDAOTest {
 
-    private EssensplanDAOTestDatenbank datenbank;
+    private TestDatenbank testDatenbank;
     private EssensplanDAO essensplanDAO;
 
     // Vor jedem Test eine neue In-Memory-Datenbank erstellen
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        datenbank = Room.inMemoryDatabaseBuilder(context, EssensplanDAOTestDatenbank.class).allowMainThreadQueries().build();
-        essensplanDAO = datenbank.essensplanDAO();
+        testDatenbank = new TestDatenbank();
+        essensplanDAO = testDatenbank.getDatenbank().essensplanDAO();
     }
 
     // Nach jedem Test die Datenbank schließen
     @After
     public void tearDown() {
-        datenbank.close();
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
     }
 
     // Einen neuen Essensplan einfügen und anhand seiner ID abrufen
