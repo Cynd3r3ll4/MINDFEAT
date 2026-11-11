@@ -155,4 +155,17 @@ public class RezeptZutatDAOTest {
         assertEquals(1, anzahlGeloeschterRezepte);
         assertNull(rezeptZutatDAO.nachIdAbrufen((int) id));
     }
+
+    // Beim Löschen einer Zutat werden ihre Rezept-Zutat-Zuordnungen mitgelöscht
+    @Test
+    public void loeschenEinerZutatLoeschtZuordnungen() {
+        Rezept rezept = rezeptErstellen("Kartoffelsuppe");
+        Zutat zutat = zutatErstellen("Kartoffeln");
+        RezeptZutat rezeptZutat = new RezeptZutat(rezept.getId(), zutat.getId(), 800.0, "g");
+        long zuordnungsId = rezeptZutatDAO.einfuegen(rezeptZutat);
+        int anzahlGeloeschterZutaten = zutatDAO.loeschen(zutat);
+        assertEquals(1, anzahlGeloeschterZutaten);
+        assertNull(rezeptZutatDAO.nachIdAbrufen((int) zuordnungsId));
+        assertNotNull(rezeptDAO.nachIdAbrufen(rezept.getId()));
+    }
 }

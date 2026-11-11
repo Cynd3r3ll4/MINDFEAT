@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import de.mindfeat.app.model.datengrundlage.TestDatenbank;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenbeitrag;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenelement;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 
@@ -151,16 +152,19 @@ public class EinkaufslistenelementDAOTest {
         assertNull(gespeichert);
     }
 
-    // Beim Löschen einer Zutat ihre Einkaufslisteneinträge mitlöschen
+    // Beim Löschen einer Zutat werden Einkaufslistenelemente und deren Einkaufslistenbeiträge ebenfalls gelöscht
     @Test
-    public void loeschenZutatLoeschtEinkaufslistenelementeMit() {
+    public void loeschenZutatLoeschtEinkaufslistenelementeUndBeitraegeMit() {
         Zutat zutat = new Zutat("Zwiebeln");
         long zutatId = zutatDAO.einfuegen(zutat);
         zutat.setId((int) zutatId);
-        einkaufslistenelementDAO.einfuegen(new Einkaufslistenelement((int) zutatId, 500.0, "g", false));
+        Einkaufslistenelement element = new Einkaufslistenelement((int) zutatId, 500.0, "g", false);
+        long elementId = einkaufslistenelementDAO.einfuegen(element);
+        Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag((int) elementId, null, 500.0);
+        einkaufslistenbeitragDAO.einfuegen(beitrag);
         int anzahl = zutatDAO.loeschen(zutat);
-        List<Einkaufslistenelement> eintraege = einkaufslistenelementDAO.alleAbrufen();
         assertEquals(1, anzahl);
-        assertTrue(eintraege.isEmpty());
+        assertTrue(einkaufslistenelementDAO.alleAbrufen().isEmpty());
+        assertTrue(einkaufslistenbeitragDAO.nachEinkaufslistenelementIdAbrufen((int) elementId).isEmpty());
     }
 }

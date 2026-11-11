@@ -1,3 +1,4 @@
+
 package de.mindfeat.app.model.vermittler;
 
 import de.mindfeat.app.model.datengrundlage.ZentraleDatenbank;
@@ -27,7 +28,6 @@ public class EinkaufslisteVermittler {
     private final EssensplanVermittler essensplanVermittler;
     private final ZentraleDatenbank datenbank;
 
-
     // Konstruktor bezieht benötigte DAOs aus der zentralen Datenbank
     public EinkaufslisteVermittler(ZentraleDatenbank datenbank) {
         if (datenbank == null) {
@@ -42,37 +42,58 @@ public class EinkaufslisteVermittler {
 
     // Die gesamte Einkaufsliste einschließlich Zutaten und Beiträgen abrufen
     public List<EinkaufslistenDetails> alleAbrufen() {
-        List<Einkaufslistenelement> elemente = einkaufslistenelementDAO.alleAbrufen();
+        List<Einkaufslistenelement> elemente =
+                einkaufslistenelementDAO.alleAbrufen();
+        List<Zutat> zutaten = zutatDAO.alleAbrufen();
+        List<Einkaufslistenbeitrag> alleBeitraege =
+                einkaufslistenbeitragDAO.alleAbrufen();
+        Map<Integer, Zutat> zutatenNachId = new HashMap<>();
+        for (Zutat zutat : zutaten) {
+            zutatenNachId.put(zutat.getId(), zutat);
+        }
+        Map<Integer, List<Einkaufslistenbeitrag>> beitraegeNachElementId =
+                new HashMap<>();
+        for (Einkaufslistenbeitrag beitrag : alleBeitraege) {
+            int elementId = beitrag.getEinkaufslistenelementId();
+            if (!beitraegeNachElementId.containsKey(elementId)) {
+                beitraegeNachElementId.put(elementId, new ArrayList<>());
+            }
+            beitraegeNachElementId.get(elementId).add(beitrag);
+        }
         List<EinkaufslistenDetails> ergebnis = new ArrayList<>();
         for (Einkaufslistenelement element : elemente) {
-            Zutat zutat = zutatDAO.nachIdAbrufen(element.getZutatId());
-            List<Einkaufslistenbeitrag> beitraege = einkaufslistenbeitragDAO.nachEinkaufslistenelementIdAbrufen(element.getId());
-            if (zutat != null) {
-                ergebnis.add(new EinkaufslistenDetails(element, zutat, beitraege));
+            Zutat zutat = zutatenNachId.get(element.getZutatId());
+            if (zutat == null) { // Ein Element ohne zugehörige Zutat wird nicht als vollständiger Listeneintrag zurückgegeben
+                continue;
             }
+            List<Einkaufslistenbeitrag> beitraege = beitraegeNachElementId.get(element.getId());
+            if (beitraege == null) {
+                beitraege = Collections.emptyList();
+            }
+            ergebnis.add(new EinkaufslistenDetails(element, zutat, beitraege));
         }
         return ergebnis;
     }
 
-    // Ein neues Element manuell zur Einkaufsliste hinzufügen inkl. Berechnung der Menge
+    // Ein neues Element manuell zur Einkaufsliste hinzufügen
     public int manuellHinzufuegen(String zutatName, Double menge, String einheit) {
         if (zutatName == null || zutatName.trim().isEmpty()) {
             throw new IllegalArgumentException("Bitte gib einen Namen für das Element an.");
         }
         if (menge != null && (!Double.isFinite(menge) || menge <= 0)) {
-            throw new IllegalArgumentException("Bitte gib eine Menge ein.");
+            throw new IllegalArgumentException("Bitte gib eine gültige Menge ein.");
         }
         String name = zutatName.trim();
         String einheitBereinigt = einheit == null || einheit.trim().isEmpty() ? null : einheit.trim();
         final int[] elementId = new int[1];
         datenbank.runInTransaction(() -> {
-            Zutat zutat = zutatDAO.nachNameAbrufen(name); // Vorhandene Zutat wiederverwenden oder neu anlegen
-            if (zutat == null) {
+            Zutat zutat = zutatDAO.nachNameAbrufen(name);
+            if (zutat == null) { // Vorhandene Zutat wiederverwenden oder neu anlegen
                 zutat = new Zutat(name);
                 long zutatId = zutatDAO.einfuegen(zutat);
                 zutat.setId((int) zutatId);
             }
-            Einkaufslistenelement element = elementFinden(zutat.getId(), einheitBereinigt); // Vorhandenes Element mit derselben Zutat und Einheit suchen
+            Einkaufslistenelement element = elementFinden(zutat.getId(), einheitBereinigt);
             if (element == null) {
                 element = new Einkaufslistenelement(zutat.getId(), null, einheitBereinigt, false);
                 long id = einkaufslistenelementDAO.einfuegen(element);
@@ -81,15 +102,15 @@ public class EinkaufslisteVermittler {
             // Vorhandenen manuellen Beitrag suchen
             List<Einkaufslistenbeitrag> manuelleBeitraege = einkaufslistenbeitragDAO.nachElementIdUndEssensplanIdAbrufen(element.getId(), null);
             if (manuelleBeitraege.isEmpty()) {
-                Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag(element.getId(), null, menge); // Neuen manuellen Beitrag speichern
+                Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag(element.getId(), null, menge);
                 einkaufslistenbeitragDAO.einfuegen(beitrag);
             } else {
-                Einkaufslistenbeitrag beitrag = manuelleBeitraege.get(0); // Vorhandenen manuellen Beitrag ergänzen
+                Einkaufslistenbeitrag beitrag = manuelleBeitraege.get(0);
                 beitrag.setMenge(mengenAddieren(beitrag.getMenge(), menge));
                 einkaufslistenbeitragDAO.aktualisieren(beitrag);
             }
             element.setErledigt(false);
-            elementAktualisieren(element.getId()); // Gesamtmenge aus allen Beiträgen neu berechnen
+            elementAktualisieren(element.getId());
             elementId[0] = element.getId();
         });
         return elementId[0];
@@ -104,9 +125,9 @@ public class EinkaufslisteVermittler {
         }
         Map<ZutatEinheitSchluessel, Double> benoetigteZutaten = zutatenMengenErmitteln(essensplanDetails);
         datenbank.runInTransaction(() -> {
-            List<Einkaufslistenbeitrag> alteBeitraege = einkaufslistenbeitragDAO.nachEssensplanIdAbrufen(essensplanId); // Bereits vorhandene Beiträge dieses Plans abrufen
-            Set<Integer> betroffeneElemente = new HashSet<>(); // Beiträge entfernen, deren Zutaten nicht mehr benötigt werden
-            for (Einkaufslistenbeitrag beitrag : alteBeitraege) {
+            List<Einkaufslistenbeitrag> alteBeitraege = einkaufslistenbeitragDAO.nachEssensplanIdAbrufen(essensplanId);
+            Set<Integer> betroffeneElemente = new HashSet<>();
+            for (Einkaufslistenbeitrag beitrag : alteBeitraege) { // Beiträge entfernen, deren Zutaten nicht mehr benötigt werden
                 Einkaufslistenelement element = einkaufslistenelementDAO.nachIdAbrufen(beitrag.getEinkaufslistenelementId());
                 if (element == null) {
                     continue;
@@ -117,22 +138,22 @@ public class EinkaufslisteVermittler {
                     betroffeneElemente.add(element.getId());
                 }
             }
-            for (Map.Entry<ZutatEinheitSchluessel, Double> eintrag : benoetigteZutaten.entrySet()) { // Alle benötigten Zutaten übernehmen bzw. aktualisieren
+            for (Map.Entry<ZutatEinheitSchluessel, Double> eintrag : benoetigteZutaten.entrySet()) { // Alle benötigten Zutaten übernehmen bzw. vorhandene Beiträge aktualisieren
                 ZutatEinheitSchluessel schluessel = eintrag.getKey();
                 double menge = eintrag.getValue();
-                Einkaufslistenelement element = elementFinden(schluessel.zutatId, schluessel.einheit); // Passendes Einkaufslistenelement suchen
+                Einkaufslistenelement element = elementFinden(schluessel.zutatId, schluessel.einheit);
+
                 if (element == null) {
                     element = new Einkaufslistenelement(schluessel.zutatId, null, schluessel.einheit, false);
                     long id = einkaufslistenelementDAO.einfuegen(element);
                     element.setId((int) id);
                 }
-                // Prüfen, ob für diesen Plan bereits ein Beitrag existiert
                 List<Einkaufslistenbeitrag> vorhandeneBeitraege = einkaufslistenbeitragDAO.nachElementIdUndEssensplanIdAbrufen(element.getId(), essensplanId);
                 if (vorhandeneBeitraege.isEmpty()) {
-                    Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag(element.getId(), essensplanId, menge); // Neuen Beitrag für diesen Essensplan anlegen
+                    Einkaufslistenbeitrag beitrag = new Einkaufslistenbeitrag(element.getId(), essensplanId, menge);
                     einkaufslistenbeitragDAO.einfuegen(beitrag);
                 } else {
-                    Einkaufslistenbeitrag beitrag = vorhandeneBeitraege.get(0); // Bestehenden Beitrag aktualisieren
+                    Einkaufslistenbeitrag beitrag = vorhandeneBeitraege.get(0);
                     beitrag.setMenge(menge);
                     einkaufslistenbeitragDAO.aktualisieren(beitrag);
                 }
@@ -140,7 +161,7 @@ public class EinkaufslisteVermittler {
                 einkaufslistenelementDAO.aktualisieren(element);
                 betroffeneElemente.add(element.getId());
             }
-            for (Integer elementId : betroffeneElemente) { // Mengen aller betroffenen Elemente neu berechnen
+            for (Integer elementId : betroffeneElemente) { // Gesamtmengen der betroffenen Elemente neu berechnen
                 elementAktualisieren(elementId);
             }
         });
@@ -149,24 +170,27 @@ public class EinkaufslisteVermittler {
     // Alle Beiträge eines Essensplans aus der Einkaufsliste entfernen
     public void ausEssensplanEntfernen(int essensplanId) {
         pruefeId(essensplanId, "Essensplan-ID");
-        datenbank.runInTransaction(() -> {
-            List<Einkaufslistenbeitrag> beitraege = einkaufslistenbeitragDAO.nachEssensplanIdAbrufen(essensplanId);
-            Set<Integer> betroffeneElemente = new HashSet<>();
-            for (Einkaufslistenbeitrag beitrag : beitraege) {
-                betroffeneElemente.add(beitrag.getEinkaufslistenelementId());
-                einkaufslistenbeitragDAO.loeschen(beitrag);
-            }
-            for (Integer elementId : betroffeneElemente) {
-                elementAktualisieren(elementId);
-            }
-        });
+        datenbank.runInTransaction(() -> ausEssensplanEntfernenIntern(essensplanId));
     }
 
-    // Einen Essensplan inkl. Einkaufslistenbeiträge löschen
+    // Interne Variante ohne eigenen Transaktionsaufruf (kann innerhalb einer bereits laufenden Transaktion verwendet werden)
+    private void ausEssensplanEntfernenIntern(int essensplanId) {
+        List<Einkaufslistenbeitrag> beitraege = einkaufslistenbeitragDAO.nachEssensplanIdAbrufen(essensplanId);
+        Set<Integer> betroffeneElemente = new HashSet<>();
+        for (Einkaufslistenbeitrag beitrag : beitraege) {
+            betroffeneElemente.add(beitrag.getEinkaufslistenelementId());
+            einkaufslistenbeitragDAO.loeschen(beitrag);
+        }
+        for (Integer elementId : betroffeneElemente) {
+            elementAktualisieren(elementId);
+        }
+    }
+
+    // Einen Essensplan einschließlich seiner Einkaufslistenbeiträge löschen
     public void essensplanLoeschen(int essensplanId) {
         pruefeId(essensplanId, "Essensplan-ID");
         datenbank.runInTransaction(() -> {
-            ausEssensplanEntfernen(essensplanId);
+            ausEssensplanEntfernenIntern(essensplanId);
             essensplanVermittler.loeschen(essensplanId);
         });
     }
@@ -177,7 +201,7 @@ public class EinkaufslisteVermittler {
         datenbank.runInTransaction(() -> {
             Einkaufslistenbeitrag beitrag = einkaufslistenbeitragDAO.nachIdAbrufen(beitragId);
             if (beitrag == null) {
-                throw new IllegalArgumentException("Diese Mahlzeit liefert keinen Beitrag zur Mengenberechnung.");
+                throw new IllegalArgumentException("Dieser Einkaufslistenbeitrag existiert nicht.");
             }
             int elementId = beitrag.getEinkaufslistenelementId();
             einkaufslistenbeitragDAO.loeschen(beitrag);
@@ -196,7 +220,7 @@ public class EinkaufslisteVermittler {
         einkaufslistenelementDAO.aktualisieren(element);
     }
 
-    // Ein Einkaufslistenelement vollständig löschen (inkl. zugehöriger Beiträge)
+    // Ein Einkaufslistenelement vollständig löschen (zugehörige Beiträge werden entfernt)
     public void loeschen(int elementId) {
         pruefeId(elementId, "Element-ID");
         Einkaufslistenelement element = einkaufslistenelementDAO.nachIdAbrufen(elementId);
@@ -207,8 +231,7 @@ public class EinkaufslisteVermittler {
     }
 
     // Die Zutatenmengen eines Essensplans anhand der Planportionen berechnen
-    private Map<ZutatEinheitSchluessel, Double> zutatenMengenErmitteln(
-            EssensplanVermittler.EssensplanDetails essensplanDetails) {
+    private Map<ZutatEinheitSchluessel, Double> zutatenMengenErmitteln(EssensplanVermittler.EssensplanDetails essensplanDetails) {
         Map<ZutatEinheitSchluessel, Double> zutatenMengen = new HashMap<>();
         for (EssensplanVermittler.InhaltMitRezept inhaltMitRezept : essensplanDetails.getEintraege()) {
             int planPortionen = inhaltMitRezept.getEintrag().getPortionen();
@@ -216,10 +239,10 @@ public class EinkaufslisteVermittler {
             if (planPortionen < 1 || rezeptPortionen < 1) {
                 throw new IllegalStateException("Die Portionsanzahl eines Planeintrags ist ungültig.");
             }
-            double faktor = (double) planPortionen / rezeptPortionen; // Verhältnis zwischen gewünschter Planmenge und ursprünglicher Rezeptmenge berechnen
+            double faktor = (double) planPortionen / rezeptPortionen;
             for (RezeptZutat rezeptZutat : inhaltMitRezept.getRezeptDetails().getRezeptZutaten()) {
                 ZutatEinheitSchluessel schluessel = new ZutatEinheitSchluessel(rezeptZutat.getZutatId(), rezeptZutat.getEinheit());
-                Double angepassteMenge = rezeptZutat.getMenge() * faktor;
+                double angepassteMenge = rezeptZutat.getMenge() * faktor;
                 if (zutatenMengen.containsKey(schluessel)) {
                     zutatenMengen.compute(schluessel, (k, bisherigeMenge) -> mengenAddieren(bisherigeMenge, angepassteMenge));
                 } else {
@@ -227,21 +250,19 @@ public class EinkaufslisteVermittler {
                 }
             }
         }
-
         return zutatenMengen;
     }
 
     // Ein Einkaufslistenelement anhand von Zutat und Einheit suchen
     private Einkaufslistenelement elementFinden(int zutatId, String einheit) {
         List<Einkaufslistenelement> elemente = einkaufslistenelementDAO.nachZutatIdUndEinheitAbrufen(zutatId, einheit);
-
         if (elemente.isEmpty()) {
             return null;
         }
         return elemente.get(0);
     }
 
-    // Gesamtmenge eines Elements anhand seiner Beiträge neu berechnen (ohne Beiträge wird das Element entfernt)
+    // Gesamtmenge eines Elements anhand seiner Beiträge neu berechnen (ohne Beiträge wird das Einkaufslistenelement entfernt)
     private void elementAktualisieren(int elementId) {
         Einkaufslistenelement element = einkaufslistenelementDAO.nachIdAbrufen(elementId);
         if (element == null) {
@@ -261,8 +282,7 @@ public class EinkaufslisteVermittler {
                 gesamtmenge += beitrag.getMenge();
             }
         }
-        element.setMenge(
-                mengeUnbekannt ? null : gesamtmenge);
+        element.setMenge(mengeUnbekannt ? null : gesamtmenge);
         einkaufslistenelementDAO.aktualisieren(element);
     }
 
@@ -276,14 +296,12 @@ public class EinkaufslisteVermittler {
 
     private void pruefeId(int id, String bezeichnung) {
         if (id < 1) {
-            throw new IllegalArgumentException(
-                    bezeichnung + " muss größer als 0 sein.");
+            throw new IllegalArgumentException(bezeichnung + " muss größer als 0 sein.");
         }
     }
 
     // Objekt zur Zusammenfassung gleicher Zutaten mit gleicher Einheit
     private static class ZutatEinheitSchluessel {
-
         private final int zutatId;
         private final String einheit;
 
@@ -303,17 +321,14 @@ public class EinkaufslisteVermittler {
             ZutatEinheitSchluessel anderer = (ZutatEinheitSchluessel) objekt;
             return zutatId == anderer.zutatId && Objects.equals(einheit, anderer.einheit);
         }
-
         @Override
         public int hashCode() {
             return Objects.hash(zutatId, einheit);
         }
     }
 
-
     // Ergebnisobjekt für ein Einkaufslistenelement mit seinen Details
     public static class EinkaufslistenDetails {
-
         private final Einkaufslistenelement element;
         private final Zutat zutat;
         private final List<Einkaufslistenbeitrag> beitraege;
@@ -337,3 +352,4 @@ public class EinkaufslisteVermittler {
         }
     }
 }
+

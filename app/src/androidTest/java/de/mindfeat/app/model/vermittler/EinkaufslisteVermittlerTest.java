@@ -21,11 +21,14 @@ import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.dao.EinkaufslistenbeitragDAO;
 import de.mindfeat.app.model.datengrundlage.dao.EinkaufslistenelementDAO;
 import de.mindfeat.app.model.datengrundlage.dao.EssensplanDAO;
+import de.mindfeat.app.model.datengrundlage.dao.RezeptZutatDAO;
 import de.mindfeat.app.model.datengrundlage.dao.ZutatDAO;
+
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenbeitrag;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Einkaufslistenelement;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptZutat;
 
 @RunWith(AndroidJUnit4.class)
 public class EinkaufslisteVermittlerTest {
@@ -38,6 +41,7 @@ public class EinkaufslisteVermittlerTest {
     private EinkaufslistenelementDAO elementDAO;
     private EssensplanDAO essensplanDAO;
     private ZutatDAO zutatDAO;
+    private RezeptZutatDAO rezeptZutatDAO;
 
     // Eine Testdatenbank für die Tests erstellen
     @Before
@@ -50,6 +54,7 @@ public class EinkaufslisteVermittlerTest {
         elementDAO = testDatenbank.getDatenbank().einkaufslistenelementDAO();
         essensplanDAO = testDatenbank.getDatenbank().essensplanDAO();
         zutatDAO = testDatenbank.getDatenbank().zutatDAO();
+        rezeptZutatDAO = testDatenbank.getDatenbank().rezeptZutatDAO();
     }
 
     // Die Testdatenbank nach den Tests schließen
@@ -216,5 +221,102 @@ public class EinkaufslisteVermittlerTest {
         einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
         Einkaufslistenelement element = elementAbrufen("Kartoffeln", "g");
         assertEquals(Double.valueOf(1000.0), element.getMenge());
+    }
+
+    // Eine erneute Übernahme aktualisiert geänderte Zutatenmengen
+    @Test
+    public void essensplanErneutUebernehmenAktualisiertGeaenderteMengen() {
+        int essensplanId = essensplanAnlegen();
+        int rezeptId = rezeptAnlegen("Kartoffelsuppe", Collections.singletonList(
+                        new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g")), 2);
+        essensplanVermittler.inhaltHinzufuegen(essensplanId, rezeptId, "2026-11-03");
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
+        RezeptZutat rezeptZutat = rezeptZutatDAO.nachRezeptIdAbrufen(rezeptId).get(0);
+        rezeptZutat.setMenge(750.0);
+        rezeptZutatDAO.aktualisieren(rezeptZutat);
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
+        Einkaufslistenelement element = elementAbrufen("Kartoffeln", "g");
+        assertEquals(Double.valueOf(750.0), element.getMenge());
+        assertEquals(1, beitragDAO.nachEssensplanIdAbrufen(essensplanId).size());
+    }
+
+    // Zutaten, die ein Rezept nicht mehr benötigt, werden entfernt
+    @Test
+    public void entfernteRezeptzutatenWerdenAusEinkaufslisteEntfernt() {
+        int essensplanId = essensplanAnlegen();
+        int rezeptId = rezeptAnlegen("Gemüsesuppe", Arrays.asList(
+                        new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g"),
+                        new RezeptVermittler.ZutatAngabe("Möhren", 200.0, "g")), 2);
+        essensplanVermittler.inhaltHinzufuegen(essensplanId, rezeptId, "2026-11-03");
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
+        List<RezeptZutat> rezeptZutaten = rezeptZutatDAO.nachRezeptIdAbrufen(rezeptId);
+        RezeptZutat moehrenZuordnung = null;
+        for (RezeptZutat rezeptZutat : rezeptZutaten) {
+            de.mindfeat.app.model.datengrundlage.entitaeten.Zutat zutat = zutatDAO.nachIdAbrufen(rezeptZutat.getZutatId());
+            if (zutat != null && "Möhren".equals(zutat.getName())) {
+                moehrenZuordnung = rezeptZutat;
+                break;
+            }
+        }
+        assertNotNull(moehrenZuordnung);
+        rezeptZutatDAO.loeschen(moehrenZuordnung);
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
+        de.mindfeat.app.model.datengrundlage.entitaeten.Zutat moehren = zutatDAO.nachNameAbrufen("Möhren");
+        assertNotNull(moehren);
+        assertTrue(elementDAO.nachZutatIdAbrufen(moehren.getId()).isEmpty());
+        assertEquals(Double.valueOf(500.0), elementAbrufen("Kartoffeln", "g").getMenge());
+    }
+
+    // Dieselbe Zutat aus mehreren Rezepten eines Plans wird zusammengeführt
+    @Test
+    public void gleicheZutatAusMehrerenRezeptenZusammenfuehren() {
+        int essensplanId = essensplanAnlegen();
+        int rezeptId1 = rezeptAnlegen("Kartoffelsuppe",
+                Collections.singletonList(new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g")), 2);
+        int rezeptId2 = rezeptAnlegen("Kartoffelauflauf",
+                Collections.singletonList(new RezeptVermittler.ZutatAngabe("Kartoffeln", 250.0, "g")), 2);
+        essensplanVermittler.inhaltHinzufuegen(essensplanId, rezeptId1, "2026-11-03");
+        essensplanVermittler.inhaltHinzufuegen(essensplanId, rezeptId2, "2026-11-04");
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId);
+        Einkaufslistenelement element = elementAbrufen("Kartoffeln", "g");
+        assertEquals(Double.valueOf(750.0), element.getMenge());
+        List<Einkaufslistenbeitrag> beitraege = beitragDAO.nachEssensplanIdAbrufen(essensplanId);
+        assertEquals(1, beitraege.size());
+        assertEquals(element.getId(), beitraege.get(0).getEinkaufslistenelementId());
+    }
+
+    // Beim Entfernen eines Plans bleiben Beiträge anderer Pläne erhalten
+    @Test
+    public void beimEntfernenEinesPlansBleibenAnderePlanbeitraegeErhalten() {
+        int essensplanId1 = essensplanAnlegen();
+        int essensplanId2 = essensplanAnlegen();
+        int rezeptId1 = rezeptAnlegen("Kartoffelsuppe",
+                Collections.singletonList(new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g")), 2);
+        int rezeptId2 = rezeptAnlegen("Kartoffelauflauf",
+                Collections.singletonList(new RezeptVermittler.ZutatAngabe("Kartoffeln", 300.0, "g")), 2);
+        essensplanVermittler.inhaltHinzufuegen(essensplanId1, rezeptId1, "2026-11-03");
+        essensplanVermittler.inhaltHinzufuegen(essensplanId2, rezeptId2, "2026-11-04");
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId1);
+        einkaufslisteVermittler.ausEssensplanHinzufuegen(essensplanId2);
+        Einkaufslistenelement element = elementAbrufen("Kartoffeln", "g");
+        assertEquals(Double.valueOf(800.0), element.getMenge());
+        einkaufslisteVermittler.ausEssensplanEntfernen(essensplanId1);
+        Einkaufslistenelement aktualisiertesElement = elementAbrufen("Kartoffeln", "g");
+        assertEquals(Double.valueOf(300.0), aktualisiertesElement.getMenge());
+        List<Einkaufslistenbeitrag> verbleibendeBeitraege = beitragDAO.nachEinkaufslistenelementIdAbrufen(aktualisiertesElement.getId());
+        assertEquals(1, verbleibendeBeitraege.size());
+        assertEquals(Integer.valueOf(essensplanId2), verbleibendeBeitraege.get(0).getEssensplanId());
+    }
+
+    // Eine unbekannte Menge macht auch die Gesamtmenge unbekannt
+    @Test
+    public void unbekannteMengeMachtGesamtmengeUnbekannt() {
+        einkaufslisteVermittler.manuellHinzufuegen("Milch", 300.0, "ml");
+        einkaufslisteVermittler.manuellHinzufuegen("Milch", null, "ml");
+        Einkaufslistenelement element = elementAbrufen("Milch", "ml");
+        assertNull(element.getMenge());
+        List<Einkaufslistenbeitrag> beitraege = beitragDAO.nachEinkaufslistenelementIdAbrufen(element.getId());
+        assertEquals(1, beitraege.size());
+        assertNull(beitraege.get(0).getMenge());
     }
 }

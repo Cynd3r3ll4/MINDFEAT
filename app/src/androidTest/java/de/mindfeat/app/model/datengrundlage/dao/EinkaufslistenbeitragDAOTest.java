@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -193,5 +194,23 @@ public class EinkaufslistenbeitragDAOTest {
         Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
         essensplanDAO.loeschen(essensplan);
         assertTrue(einkaufslistenbeitragDAO.nachEssensplanIdAbrufen(essensplanId).isEmpty());
+    }
+
+    // Beim Löschen eines Essensplans bleiben manuelle Beiträge erhalten
+    @Test
+    public void loeschenEssensplanErhaeltManuelleBeitraege() {
+        int elementId = einkaufslistenelementErstellen("Mehl");
+        int essensplanId = essensplanErstellen();
+        Einkaufslistenbeitrag planBeitrag = new Einkaufslistenbeitrag(elementId, essensplanId, 250.0);
+        einkaufslistenbeitragDAO.einfuegen(planBeitrag);
+        Einkaufslistenbeitrag manuellerBeitrag = new Einkaufslistenbeitrag(elementId, null, 100.0);
+        long manuellerBeitragId = einkaufslistenbeitragDAO.einfuegen(manuellerBeitrag);
+        Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
+        essensplanDAO.loeschen(essensplan);
+        List<Einkaufslistenbeitrag> verbleibendeBeitraege = einkaufslistenbeitragDAO.nachEinkaufslistenelementIdAbrufen(elementId);
+        assertEquals(1, verbleibendeBeitraege.size());
+        assertEquals((int) manuellerBeitragId, verbleibendeBeitraege.get(0).getId());
+        assertNull(verbleibendeBeitraege.get(0).getEssensplanId());
+        assertNotNull(testDatenbank.getDatenbank().einkaufslistenelementDAO().nachIdAbrufen(elementId));
     }
 }
