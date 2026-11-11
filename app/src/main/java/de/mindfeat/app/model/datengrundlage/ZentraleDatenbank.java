@@ -43,7 +43,7 @@ import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
                 Einkaufslistenelement.class,
                 Einkaufslistenbeitrag.class
         },
-        version = 2,
+        version = 3,
         exportSchema = false
 )
 public abstract class ZentraleDatenbank extends RoomDatabase {
@@ -78,7 +78,7 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
         if (instanz == null) {
             synchronized (ZentraleDatenbank.class) {
                 if (instanz == null) {
-                    instanz = Room.databaseBuilder(context.getApplicationContext(), ZentraleDatenbank.class, "mindfeat_datenbank").addMigrations(MIGRATION_1_2).build();
+                    instanz = Room.databaseBuilder(context.getApplicationContext(), ZentraleDatenbank.class, "mindfeat_datenbank").addMigrations(MIGRATION_1_2, MIGRATION_2_3).build();
                 }
             }
         }
@@ -114,6 +114,29 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
                             "`index_einkaufslistenbeitraege_einkaufslistenelementId_essensplanId` " +
                             "ON `einkaufslistenbeitraege` " +
                             "(`einkaufslistenelementId`, `essensplanId`)");
+        }
+    };
+
+    // Migration von Datenbankversion 2 auf 3
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            database.execSQL(
+                    "ALTER TABLE `inhalt_essensplan` " +
+                            "ADD COLUMN `portionen` INTEGER NOT NULL DEFAULT 1"
+            );
+            database.execSQL( // Bestehende Planeinträge übernehmen die bisherige Portionsanzahl des jeweils zugeordneten Rezepts
+                    "UPDATE `inhalt_essensplan` " +
+                            "SET `portionen` = (" +
+                            "SELECT `portionen` FROM `rezepte` " +
+                            "WHERE `rezepte`.`id` = `inhalt_essensplan`.`rezeptId`" +
+                            ") " +
+                            "WHERE EXISTS (" +
+                            "SELECT 1 FROM `rezepte` " +
+                            "WHERE `rezepte`.`id` = `inhalt_essensplan`.`rezeptId`" +
+                            ")"
+            );
         }
     };
 }

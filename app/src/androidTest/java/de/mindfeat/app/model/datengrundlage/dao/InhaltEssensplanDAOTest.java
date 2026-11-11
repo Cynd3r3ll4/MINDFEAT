@@ -58,8 +58,8 @@ public class InhaltEssensplanDAOTest {
     }
 
     // Einen Eintrag für einen Essensplan erstellen
-    private InhaltEssensplan inhaltErstellen(int essensplanId, int rezeptId, String datum) {
-        InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, datum);
+    private InhaltEssensplan inhaltErstellen(int essensplanId, int rezeptId, String datum, int portionen) {
+        InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, datum, portionen, portionen);
         long id = inhaltEssensplanDAO.einfuegen(inhalt);
         inhalt.setId((int) id);
         return inhalt;
@@ -70,7 +70,7 @@ public class InhaltEssensplanDAOTest {
     public void einfuegenUndNachIdAbrufen() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gulasch");
-        InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, "2026-11-02");
+        InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, "2026-11-02", 2, 2);
         long id = inhaltEssensplanDAO.einfuegen(inhalt);
         InhaltEssensplan gespeichert = inhaltEssensplanDAO.nachIdAbrufen((int) id);
         assertEquals(essensplanId, gespeichert.getEssensplanId());
@@ -83,7 +83,7 @@ public class InhaltEssensplanDAOTest {
     public void aktualisieren() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gerstensuppe");
-        InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         inhalt.setDatum("2026-11-03");
         int anzahl = inhaltEssensplanDAO.aktualisieren(inhalt);
         InhaltEssensplan aktualisiert = inhaltEssensplanDAO.nachIdAbrufen(inhalt.getId());
@@ -96,7 +96,7 @@ public class InhaltEssensplanDAOTest {
     public void loeschen() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Kürbissuppe");
-        InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         int anzahl = inhaltEssensplanDAO.loeschen(inhalt);
         assertEquals(1, anzahl);
         assertNull(inhaltEssensplanDAO.nachIdAbrufen(inhalt.getId()));
@@ -108,8 +108,8 @@ public class InhaltEssensplanDAOTest {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId1 = rezeptErstellen("Kartoffelsuppe");
         int rezeptId2 = rezeptErstellen("Apfelpfannkuchen");
-        inhaltErstellen(essensplanId, rezeptId1, "2026-11-05");
-        inhaltErstellen(essensplanId, rezeptId2, "2026-11-02");
+        inhaltErstellen(essensplanId, rezeptId1, "2026-11-05", 2);
+        inhaltErstellen(essensplanId, rezeptId2, "2026-11-02", 2);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.alleAbrufen();
         assertEquals(2, inhalte.size());
         assertEquals("2026-11-02", inhalte.get(0).getDatum());
@@ -123,9 +123,9 @@ public class InhaltEssensplanDAOTest {
         int essensplanId2 = essensplanErstellen("Wochenplan 2");
         int rezeptId1 = rezeptErstellen("Kartoffelsuppe");
         int rezeptId2 = rezeptErstellen("Apfelpfannkuchen");
-        inhaltErstellen(essensplanId1, rezeptId1, "2026-11-02");
-        inhaltErstellen(essensplanId1, rezeptId2, "2026-11-04");
-        inhaltErstellen(essensplanId2, rezeptId1, "2026-11-03");
+        inhaltErstellen(essensplanId1, rezeptId1, "2026-11-02", 2);
+        inhaltErstellen(essensplanId1, rezeptId2, "2026-11-04", 2);
+        inhaltErstellen(essensplanId2, rezeptId1, "2026-11-03", 2);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.nachEssensplanIdAbrufen(essensplanId1);
         assertEquals(2, inhalte.size());
         assertEquals(essensplanId1, inhalte.get(0).getEssensplanId());
@@ -140,8 +140,8 @@ public class InhaltEssensplanDAOTest {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId1 = rezeptErstellen("Gulasch");
         int rezeptId2 = rezeptErstellen("Kartoffelsalat");
-        inhaltErstellen(essensplanId, rezeptId1, "2026-11-02");
-        inhaltErstellen(essensplanId, rezeptId2, "2026-11-03");
+        inhaltErstellen(essensplanId, rezeptId1, "2026-11-02", 2);
+        inhaltErstellen(essensplanId, rezeptId2, "2026-11-03", 2);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.nachDatumAbrufen("2026-11-02");
         assertEquals(1, inhalte.size());
         assertEquals("2026-11-02", inhalte.get(0).getDatum());
@@ -160,8 +160,8 @@ public class InhaltEssensplanDAOTest {
     public void mehrfachesEinplanenDesGleichenRezeptsAmGleichenTagIstMoeglich() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gulasch");
-        inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
-        inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
+        inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.nachEssensplanIdAbrufen(essensplanId);
         assertEquals(2, inhalte.size());
         assertEquals(rezeptId, inhalte.get(0).getRezeptId());
@@ -175,7 +175,7 @@ public class InhaltEssensplanDAOTest {
     public void loeschenEssensplanLoeschtZugehoerigeInhalte() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gulasch");
-        inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
         essensplanDAO.loeschen(essensplan);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.alleAbrufen();
@@ -187,7 +187,7 @@ public class InhaltEssensplanDAOTest {
     public void loeschenRezeptLoeschtZugehoerigeInhalte() {
         int essensplanId = essensplanErstellen("Wochenplan");
         int rezeptId = rezeptErstellen("Gulasch");
-        inhaltErstellen(essensplanId, rezeptId, "2026-11-02");
+        inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         Rezept rezept = rezeptDAO.nachIdAbrufen(rezeptId);
         rezeptDAO.loeschen(rezept);
         List<InhaltEssensplan> inhalte = inhaltEssensplanDAO.alleAbrufen();

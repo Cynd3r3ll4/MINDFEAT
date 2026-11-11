@@ -23,9 +23,9 @@ public class ZentraleDatenbankMigrationTest {
 
     private static final String DATENBANKNAME = "mindfeat_migration_test.db";
 
-    // bei der Migration von Version 1 auf 2 bleiben alle Daten erhalten und eine neue Tabelle wird erstellt
+    // bei der Migration von Version 1 auf 3 bleiben alle Daten erhalten und eine neue Tabelle wird erstellt
     @Test
-    public void migrationVonVersion1AufVersion2ErhaeltBestehendeDatenUndErstelltNeueTabelle() {
+    public void migrationVonVersion1AufVersion3ErhaeltBestehendeDatenUndErstelltNeueTabelle() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         context.deleteDatabase(DATENBANKNAME); // Eventuell vorhandene Testdatenbankdatei entfernen
         // 1. Datenbank mit dem alten Schema (Version 1) erstellen
@@ -38,7 +38,8 @@ public class ZentraleDatenbankMigrationTest {
         // 3. Alte Datenbank schließen
         alteDatenbank.close();
         // 4. Dieselbe Datenbankdatei mit Version 2 öffnen
-        ZentraleDatenbank neueDatenbank = Room.databaseBuilder(context, ZentraleDatenbank.class, DATENBANKNAME).addMigrations(ZentraleDatenbank.MIGRATION_1_2).allowMainThreadQueries().build();
+        ZentraleDatenbank neueDatenbank = Room.databaseBuilder(context, ZentraleDatenbank.class, DATENBANKNAME).addMigrations(ZentraleDatenbank.MIGRATION_1_2,
+                ZentraleDatenbank.MIGRATION_2_3).allowMainThreadQueries().build();
         try {
             Zutat gespeicherteZutat = neueDatenbank.zutatDAO().nachIdAbrufen(zutatId); // 5. Prüfen, ob die bisherigen Daten erhalten geblieben sind
             assertNotNull(gespeicherteZutat);

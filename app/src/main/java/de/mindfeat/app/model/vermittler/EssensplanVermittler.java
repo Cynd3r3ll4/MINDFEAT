@@ -96,7 +96,8 @@ public class EssensplanVermittler {
         if (essensplan == null) {
             throw new IllegalArgumentException("Dieser Essensplan existiert nicht.");
         }
-        if (rezeptVermittler.nachIdMitDetailsAbrufen(rezeptId) == null) {
+        RezeptVermittler.RezeptDetails rezeptDetails = rezeptVermittler.nachIdMitDetailsAbrufen(rezeptId);
+        if (rezeptDetails == null) {
             throw new IllegalArgumentException("Dieses Rezept existiert nicht.");
         }
         LocalDate eintragsDatum = parseDatum(datum);
@@ -106,7 +107,8 @@ public class EssensplanVermittler {
                 || eintragsDatum.isAfter(endDatum)) {
             throw new IllegalArgumentException("Das Datum liegt außerhalb des Essensplanzeitraums.");
         }
-        InhaltEssensplan inhaltEssensplan = new InhaltEssensplan(essensplanId, rezeptId, datum);
+        int portionen = rezeptDetails.getRezept().getPortionen();
+        InhaltEssensplan inhaltEssensplan = new InhaltEssensplan(essensplanId, rezeptId, datum, portionen, portionen);
         return inhaltEssensplanDAO.einfuegen(inhaltEssensplan);
     }
 
@@ -258,5 +260,19 @@ public class EssensplanVermittler {
         public RezeptVermittler.RezeptDetails getRezeptDetails() {
             return rezeptDetails;
         }
+    }
+
+    // Die Anzahl der Portionen eines Essensplaneintrags ändern
+    public void portionenAendern(int eintragId, int portionen) {
+        pruefeId(eintragId, "Eintrags-ID");
+        if (portionen < 1) {
+            throw new IllegalArgumentException("Die Anzahl der Portionen muss mindestens 1 sein.");
+        }
+        InhaltEssensplan eintrag = inhaltEssensplanDAO.nachIdAbrufen(eintragId);
+        if (eintrag == null) {
+            throw new IllegalArgumentException("Dieser Essensplaneintrag existiert nicht.");
+        }
+        eintrag.setPortionen(portionen);
+        inhaltEssensplanDAO.aktualisieren(eintrag);
     }
 }

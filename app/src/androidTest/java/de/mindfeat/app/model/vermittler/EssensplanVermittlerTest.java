@@ -306,4 +306,17 @@ public class EssensplanVermittlerTest {
         RezeptVermittler.RezeptDetails vorschlag = essensplanVermittler.zufaelligenVorschlagErmitteln(essensplanId, Collections.emptyList(), false);
         assertNull(vorschlag);
     }
+
+    // Standardmäßige Übernahme der Portionsgröße aus dem Rezept und Änderung dieser im Plan
+    @Test
+    public void portionenWerdenAusRezeptUebernommenUndKoennenGeaendertWerden() {
+        int essensplanId = essensplanAnlegen();
+        int rezeptId = rezeptAnlegen("Kartoffelsuppe");
+        long eintragId = essensplanVermittler.inhaltHinzufuegen(essensplanId, rezeptId, "2026-11-03");
+        InhaltEssensplan eintrag = inhaltEssensplanDAO.nachIdAbrufen((int) eintragId);
+        assertEquals(2, eintrag.getPortionen());
+        essensplanVermittler.portionenAendern((int) eintragId, 4);
+        eintrag = inhaltEssensplanDAO.nachIdAbrufen((int) eintragId);
+        assertEquals(4, eintrag.getPortionen());
+    }
 }

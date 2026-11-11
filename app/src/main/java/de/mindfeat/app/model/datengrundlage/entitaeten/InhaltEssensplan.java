@@ -1,5 +1,6 @@
 package de.mindfeat.app.model.datengrundlage.entitaeten;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -37,12 +38,18 @@ public class InhaltEssensplan {
     private int essensplanId;
     private int rezeptId;
     private String datum;
+    @ColumnInfo(defaultValue = "1")
+    private int portionen;
+    @ColumnInfo(defaultValue = "1")
+    private int rezeptPortionen;
 
     // vollständiger Konstruktor für den Inhalt eines Essensplans (mit Settern für darin enthaltene Validierungen)
-    public InhaltEssensplan(int essensplanId, int rezeptId, String datum) {
+    public InhaltEssensplan(int essensplanId, int rezeptId, String datum, int portionen, int rezeptPortionen) {
         setEssensplanId(essensplanId);
         setRezeptId(rezeptId);
         setDatum(datum);
+        setPortionen(portionen);
+        setRezeptPortionen(rezeptPortionen);
     }
 
     // Getter und Setter
@@ -103,5 +110,33 @@ public class InhaltEssensplan {
                     "Das Datum muss ein gültiges Datum im Format YYYY-MM-DD sein.", e);
         }
         this.datum = datum;
+    }
+
+    // Planportionen
+    public int getPortionen() {
+        return portionen;
+    }
+
+    public void setPortionen(int portionen) {
+        if (portionen < 1) {
+            throw new IllegalArgumentException(
+                    "Die Anzahl der Portionen muss mindestens 1 sein."
+            );
+        }
+        this.portionen = portionen;
+    }
+
+    // Ursprüngliche Rezeptportionen
+    public int getRezeptPortionen() {
+        return rezeptPortionen;
+    }
+
+    public void setRezeptPortionen(int rezeptPortionen) {
+        if (rezeptPortionen < 1) {
+            throw new IllegalArgumentException(
+                    "Die ursprüngliche Anzahl der Rezeptportionen muss mindestens 1 sein."
+            );
+        }
+        this.rezeptPortionen = rezeptPortionen;
     }
 }

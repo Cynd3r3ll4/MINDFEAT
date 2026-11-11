@@ -100,7 +100,7 @@ public class ZentraleDatenbankTest {
         // Essensplan anlegen und Rezept einem Datum zuordnen
         Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
         int essensplanId = (int) datenbank.essensplanDAO().einfuegen(essensplan);
-        datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04"));
+        datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04", 2, 2));
 
         // Einkaufslistenelement anlegen
         Einkaufslistenelement einkaufslistenelement = new Einkaufslistenelement(paprikaId, 2.0, "Stück", false);
@@ -163,7 +163,7 @@ public class ZentraleDatenbankTest {
         datenbank.zubereitungsschrittDAO().einfuegen(new Zubereitungsschritt(rezeptId, 1, "Nudeln kochen."));
         Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
         int essensplanId = (int) datenbank.essensplanDAO().einfuegen(essensplan);
-        int planeintragId = (int) datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04"));
+        int planeintragId = (int) datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04", 2, 2));
         int einkaufslistenId = (int) datenbank.einkaufslistenelementDAO().einfuegen(new Einkaufslistenelement(zutatId, 300.0, "g", false));
 
         // Rezept löschen (abhängige Rezept-Zuordnungen und Planeinträge automatisch entfernen)
