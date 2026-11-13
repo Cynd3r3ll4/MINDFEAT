@@ -22,14 +22,14 @@
             android:id="@+id/tvAppTitel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="@font/montserrat_variablefont_wght"
+            android:gravity="bottom|center"
             android:letterSpacing="0.12"
             android:text="@string/app_name"
-            android:textSize="30sp"
             android:textColor="?attr/colorOnSurface"
-            android:fontFamily="@font/montserrat_variablefont_wght"
-            android:textStyle="bold"
-            android:layout_gravity="center_vertical" />
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btnStatistik"
@@ -86,7 +86,7 @@
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:src="@drawable/pexels_bild_rezepte" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -128,7 +128,7 @@
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:src="@drawable/pexels_bild_essensplan" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -170,7 +170,7 @@
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+                android:src="@drawable/pexels_bild_einkaufsliste" />
 
         </com.google.android.material.card.MaterialCardView>
 
