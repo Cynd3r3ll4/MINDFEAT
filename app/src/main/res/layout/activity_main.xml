@@ -20,16 +20,13 @@
 
         <TextView
             android:id="@+id/tvAppTitel"
+            style="@style/TextAppearance.Mindfeat.AppTitel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
-            android:fontFamily="@font/montserrat_variablefont_wght"
             android:gravity="bottom|center"
-            android:letterSpacing="0.12"
             android:text="@string/app_name"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="30sp"
-            android:textStyle="bold" />
+            tools:ignore="VisualLintSystemUi" />
 
         <ImageButton
             android:id="@+id/btnStatistik"
@@ -53,7 +50,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/app_untertitel"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textStyle="bold"/>
 
     <!-- Abstand unter dem Kopfbereich -->
     <Space
@@ -62,23 +60,23 @@
 
     <!-- Funktionsbereich: Rezepte -->
     <LinearLayout
+        android:id="@+id/cardRezepte"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/alternativtext_rezepte">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRezepte"
             style="@style/Widget.Mindfeat.Card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="@string/alternativtext_rezepte">
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/ivRezepte"
@@ -103,24 +101,23 @@
 
     <!-- Funktionsbereich: Essensplan -->
     <LinearLayout
+        android:id="@+id/cardEssensplan"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/alternativtext_plan">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardEssensplan"
             style="@style/Widget.Mindfeat.Card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="@string/alternativtext_plan">
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/ivEssensplan"
@@ -145,24 +142,23 @@
 
     <!-- Funktionsbereich: Einkaufsliste -->
     <LinearLayout
+        android:id="@+id/cardEinkaufsliste"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/alternativtext_liste">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardEinkaufsliste"
             style="@style/Widget.Mindfeat.Card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="@string/alternativtext_liste">
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/ivEinkaufsliste"

@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.recyclerview)
 
     // Room-Datenbank
     implementation(libs.room.runtime)

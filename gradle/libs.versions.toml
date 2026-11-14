@@ -9,6 +9,7 @@ activityKtx = "1.13.0"
 constraintlayout = "2.2.2"
 appcompatVersion = "1.8.0"
 room = "2.8.5"
+recyclerview = "1.4.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -21,6 +22,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
 room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

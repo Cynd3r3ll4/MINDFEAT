@@ -13,4 +13,10 @@
 
     <string name="statistik_oeffnen">Statistik öffnen</string>
 
+    <string name="rezept_suche_platzhalter">Name, Kategorie, Zutat…</string>
+    <string name="rezept_suche">Suche</string>
+    <string name="rezept">Rezepte</string>
+    <string name="alternativtext_rezept_hinzufuegen">Rezept hinzufügen</string>
+    <string name="alternativtext_rezept_startseite">zur Startseite</string>
+
 </resources>

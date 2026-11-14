@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Allgemeine Textgestaltung -->
     <style name="TextAppearance.Mindfeat" parent="android:TextAppearance">
         <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.Mindfeat.Body"
+        parent="TextAppearance.Mindfeat" />
+
+    <!-- App-Überschrift: MINDFEAT -->
+    <style name="TextAppearance.Mindfeat.AppTitel"
+        parent="TextAppearance.Mindfeat">
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.12</item>
     </style>
 
     <!-- Cards auf dem Startbildschirm -->
@@ -16,7 +28,7 @@
         <item name="cardBackgroundColor">?attr/colorSurface</item>
     </style>
 
-    <!-- Schrift für Überschriften und Funktionsbezeichnungen -->
+    <!-- Card-Titel auf dem Startbildschirm -->
     <style name="TextAppearance.Mindfeat.CardTitel">
         <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
         <item name="android:textSize">22sp</item>
@@ -24,7 +36,64 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <!-- Allgemeine Textgestaltung -->
-    <style name="TextAppearance.Mindfeat.Body" parent="TextAppearance.Mindfeat" />
+    <!-- Wiederverwendbarer Button für Navigations-Icons -->
+    <style name="Widget.Mindfeat.NavigationIconButton"
+        parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:tint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Seitenüberschriften: Rezepte, Essensplan usw. -->
+    <style name="TextAppearance.Mindfeat.SeitenTitel"
+        parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Labels (Beschriftungen über Eingabefeldern) -->
+    <style name="TextAppearance.Mindfeat.SucheLabel" parent="TextAppearance.Mindfeat">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <!-- Suchfeld: äußere Fläche mit leichtem Schatten -->
+    <style name="Widget.Mindfeat.SuchfeldContainer"
+        parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">10dp</item>
+        <item name="cardElevation">3dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Eingabefeld für die Rezeptsuche -->
+    <style name="Widget.Mindfeat.SuchfeldEingabe" parent="Widget.AppCompat.EditText">
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+        <item name="android:textSize">18sp</item>
+        <!-- Textfarbe und Platzhalterfarbe -->
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColorHint">?attr/colorOnSurface</item>
+        <!-- Standard-Unterstreichung entfernen -->
+        <item name="android:background">@null</item>
+        <!-- Innenabstände reduzieren -->
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <!-- Text vertikal kompakt halten -->
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <!-- Wiederverwendbarer Aktionsbutton -->
+    <style name="Widget.Mindfeat.AktionsIconButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">@drawable/bg_plus</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:tint">?attr/colorOnPrimary</item>
+        <item name="android:elevation">2dp</item>
+    </style>
 
 </resources>
