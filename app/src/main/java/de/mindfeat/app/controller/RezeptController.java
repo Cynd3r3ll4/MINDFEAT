@@ -30,6 +30,11 @@ public class RezeptController {
         ausfuehren(rezeptVermittler::alleAbrufen, callback);
     }
 
+    // Rezepte anhand eines Suchbegriffs suchen
+    public void suchAbrufen(String suchtext, Callback<List<Rezept>> callback) {
+        ausfuehren(() -> rezeptVermittler.nachSuchtextAbrufen(suchtext), callback);
+    }
+
      // Ein Rezept einschließlich Zutaten, Kategorien und Zubereitungsschritten abrufen.
     public void nachIdMitDetailsAbrufen(int rezeptId, Callback<RezeptVermittler.RezeptDetails> callback) {
         ausfuehren(() -> rezeptVermittler.nachIdMitDetailsAbrufen(rezeptId), callback);

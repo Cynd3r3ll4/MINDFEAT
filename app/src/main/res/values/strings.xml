@@ -18,5 +18,36 @@
     <string name="rezept">Rezepte</string>
     <string name="alternativtext_rezept_hinzufuegen">Rezept hinzufügen</string>
     <string name="alternativtext_rezept_startseite">zur Startseite</string>
+    <string name="alternativtext_rezept_bild">Rezeptbild</string>
+
+    <string name="rezept_erstellen">Rezept erstellen</string>
+    <string name="rezept_titel">Titel</string>
+    <string name="rezept_name">Name des Rezepts</string>
+    <string name="rezept_kategorie_beispiel">z. B. herzhaft, Herbst/Winter</string>
+    <string name="rezept_bild">Bild</string>
+    <string name="rezept_galerie">Galerie</string>
+    <string name="rezept_kamera">Kamera</string>
+    <string name="rezept_portionen">Ergibt</string>
+    <string name="rezept_portionen_platzhalter">Ergibt</string>
+
+    <string name="zutaten">Zutaten</string>
+    <string name="zutaten_hinzufuegen">Zutaten hinzufügen</string>
+
+    <string name="arbeitsschritte">Arbeitsschritte</string>
+    <string name="arbeitsschritte_hinzufuegen">Arbeitsschritte hinzufügen</string>
+
+    <string name="kategorie">Kategorie</string>
+
+    <string name="speichern">Speichern</string>
+    <string name="abbrechen">Abbrechen</string>
+
+    <string name="rezept_fehler_titel">Bitte gib deinem Rezept einen Namen.</string>
+    <string name="rezept_fehler_portionen">Bitte gib mindestens eine Portion an.</string>
+    <string name="rezept_fehler_zutat_unvollstaendig">Bitte gib eine Menge und Einheit für die Zutat ein.</string>
+    <string name="rezept_fehler_zutat_menge">Bitte gib eine gültige Menge größer als 0 ein.</string>
+    <string name="rezept_fehler_kamera">Die Kamera konnte nicht geöffnet werden.</string>
+    <string name="rezept_fehler_bild">Das Bild konnte nicht gespeichert werden.</string>
+    <string name="rezept_fehler_speichern">Das Rezept konnte nicht gespeichert werden.</string>
+    <string name="rezept_erfolgreich_gespeichert">Dein Rezept wurde gespeichert.</string>
 
 </resources>

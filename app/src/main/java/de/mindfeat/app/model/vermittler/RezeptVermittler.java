@@ -264,6 +264,13 @@ public class RezeptVermittler {
         return rezeptDAO.alleAbrufen();
     }
 
+    // Rezepte anhand eines Suchbegriffs abrufen
+    public List<Rezept> nachSuchtextAbrufen(String suchtext) {
+        if (suchtext == null || suchtext.trim().isEmpty()) { // Bei leerem Suchfeld alle Rezepte zurückgeben
+            return alleAbrufen();
+        }
+        return rezeptDAO.nachSuchtextAbrufen(suchtext.trim());
+    }
 
     // Ein Rezept vollständig löschen
     public boolean loeschen(int rezeptId) {
