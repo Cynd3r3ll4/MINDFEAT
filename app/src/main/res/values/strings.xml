@@ -18,5 +18,6 @@
     <string name="rezept">Rezepte</string>
     <string name="alternativtext_rezept_hinzufuegen">Rezept hinzufügen</string>
     <string name="alternativtext_rezept_startseite">zur Startseite</string>
+    <string name="alternativtext_rezept_bild">Rezeptbild</string>
 
 </resources>
