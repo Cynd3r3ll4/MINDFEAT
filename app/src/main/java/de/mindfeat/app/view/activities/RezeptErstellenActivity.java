@@ -3,8 +3,10 @@ package de.mindfeat.app.view.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +23,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -31,6 +36,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.mindfeat.app.MainActivity;
 import de.mindfeat.app.R;
 import de.mindfeat.app.controller.RezeptController;
 import de.mindfeat.app.model.datengrundlage.ZentraleDatenbank;
@@ -77,6 +83,10 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         ivRezeptBild = findViewById(R.id.ivRezeptVorschau);
         layoutZutaten = findViewById(R.id.layoutZutaten);
         layoutArbeitsschritte = findViewById(R.id.layoutArbeitsschritte);
+        layoutZutaten.setClipChildren(false);
+        layoutZutaten.setClipToPadding(false);
+        layoutArbeitsschritte.setClipChildren(false);
+        layoutArbeitsschritte.setClipToPadding(false);
         btnSpeichern = findViewById(R.id.btnRezeptSpeichern);
     }
 
@@ -114,6 +124,12 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         findViewById(R.id.btnBildKamera).setOnClickListener(v -> kameraOeffnen());
         findViewById(R.id.btnZutatHinzufuegen).setOnClickListener(v -> zutatHinzufuegen());
         findViewById(R.id.btnArbeitsschrittHinzufuegen).setOnClickListener(v -> schrittHinzufuegen());
+        findViewById(R.id.btnRezeptErstellenZurueck).setOnClickListener(v -> finish());
+        findViewById(R.id.btnRezeptErstellenStartseite).setOnClickListener(v -> {
+            Intent intent = new Intent(RezeptErstellenActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();});
         btnSpeichern.setOnClickListener(v -> rezeptSpeichern());
     }
 
@@ -121,14 +137,16 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private void zutatHinzufuegen() {
         LinearLayout zeile = new LinearLayout(this);
         zeile.setOrientation(LinearLayout.HORIZONTAL);
-        zeile.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        zeile.setGravity(Gravity.CENTER_VERTICAL);
         EditText menge = neuesEingabefeld("Menge", android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
         EditText einheit = neuesEingabefeld("Einheit", android.text.InputType.TYPE_CLASS_TEXT);
         EditText zutat = neuesEingabefeld("Zutat", android.text.InputType.TYPE_CLASS_TEXT);
-        zeile.addView(menge, new LinearLayout.LayoutParams(0, dp(52), 1.0f));
-        zeile.addView(einheit, new LinearLayout.LayoutParams(0, dp(52), 1.0f));
-        zeile.addView(zutat, new LinearLayout.LayoutParams(0, dp(52), 2.0f));
-        layoutZutaten.addView(zeile);
+        zeile.addView(eingabefeldContainer(menge), new LinearLayout.LayoutParams(0, dp(52), 1f));
+        zeile.addView(eingabefeldContainer(einheit), new LinearLayout.LayoutParams(0, dp(52), 1f));
+        zeile.addView(eingabefeldContainer(zutat), new LinearLayout.LayoutParams(0, dp(52), 2f));
+        LinearLayout.LayoutParams zeilenParameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        zeilenParameter.bottomMargin = dp(8);
+        layoutZutaten.addView(zeile, zeilenParameter);
         mengenFelder.add(menge);
         einheitenFelder.add(einheit);
         zutatenFelder.add(zutat);
@@ -138,21 +156,39 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private void schrittHinzufuegen() {
         EditText schritt = neuesEingabefeld("Arbeitsschritt beschreiben", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         schritt.setMinLines(2);
-        schritt.setGravity(android.view.Gravity.TOP | android.view.Gravity.START);
+        schritt.setGravity(Gravity.TOP | Gravity.START);
+        MaterialCardView container = eingabefeldContainer(schritt, true);
         LinearLayout.LayoutParams parameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         parameter.topMargin = dp(8);
-        layoutArbeitsschritte.addView(schritt, parameter);
+        layoutArbeitsschritte.addView(container, parameter);
         schrittFelder.add(schritt);
     }
 
+    // Hilfsmethode: Eingabefeld errichten
     private EditText neuesEingabefeld(String hinweis, int inputType) {
-        EditText feld = new EditText(this);
+        EditText feld = new EditText(this, null, 0, R.style.Widget_Mindfeat_FeldEingabe);
         feld.setHint(hinweis);
         feld.setInputType(inputType);
-        feld.setTextSize(15);
-        feld.setSingleLine(inputType == android.text.InputType.TYPE_CLASS_TEXT);
-        feld.setPadding(dp(8), dp(8), dp(8), dp(8));
+        feld.setSingleLine((inputType & android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE) == 0);
         return feld;
+    }
+
+    // Hilfsmethode: Eingabecontainer erstellen
+    private MaterialCardView eingabefeldContainer(EditText feld) {
+        return eingabefeldContainer(feld, false);
+    }
+
+    private MaterialCardView eingabefeldContainer(EditText feld, boolean wrapContent) {
+        MaterialCardView container = new MaterialCardView(this);
+        container.setRadius(dp(10));
+        container.setCardElevation(dp(3));
+        container.setUseCompatPadding(true);
+        container.setStrokeWidth(0);
+        int oberflaechenfarbe = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface, Color.WHITE);
+        container.setCardBackgroundColor(oberflaechenfarbe);
+        int height = wrapContent ? MaterialCardView.LayoutParams.WRAP_CONTENT : dp(52);
+        container.addView(feld, new MaterialCardView.LayoutParams(MaterialCardView.LayoutParams.MATCH_PARENT, height));
+        return container;
     }
 
     private int dp(int wert) {

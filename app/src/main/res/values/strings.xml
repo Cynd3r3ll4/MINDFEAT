@@ -27,8 +27,10 @@
     <string name="rezept_bild">Bild</string>
     <string name="rezept_galerie">Galerie</string>
     <string name="rezept_kamera">Kamera</string>
-    <string name="rezept_portionen">Ergibt</string>
-    <string name="rezept_portionen_platzhalter">Ergibt</string>
+
+    <string name="rezept_portionen_ergebnis">ergibt</string>
+    <string name="portionen">Portionen</string>
+    <string name="rezept_portionen_standard">2</string>
 
     <string name="zutaten">Zutaten</string>
     <string name="zutaten_hinzufuegen">Zutaten hinzufügen</string>
@@ -40,6 +42,7 @@
 
     <string name="speichern">Speichern</string>
     <string name="abbrechen">Abbrechen</string>
+    <string name="alternativtext_zurueck">Zurück</string>
 
     <string name="rezept_fehler_titel">Bitte gib deinem Rezept einen Namen.</string>
     <string name="rezept_fehler_portionen">Bitte gib mindestens eine Portion an.</string>

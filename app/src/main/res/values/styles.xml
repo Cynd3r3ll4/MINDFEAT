@@ -55,12 +55,13 @@
     </style>
 
     <!-- Labels (Beschriftungen über Eingabefeldern) -->
-    <style name="TextAppearance.Mindfeat.SucheLabel" parent="TextAppearance.Mindfeat">
+    <style name="TextAppearance.Mindfeat.Label" parent="TextAppearance.Mindfeat">
         <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Suchfeld: äußere Fläche mit leichtem Schatten -->
-    <style name="Widget.Mindfeat.SuchfeldContainer"
+    <style name="Widget.Mindfeat.FeldContainer"
         parent="Widget.Material3.CardView.Filled">
         <item name="cardCornerRadius">10dp</item>
         <item name="cardElevation">3dp</item>
@@ -69,7 +70,7 @@
     </style>
 
     <!-- Eingabefeld für die Rezeptsuche -->
-    <style name="Widget.Mindfeat.SuchfeldEingabe" parent="Widget.AppCompat.EditText">
+    <style name="Widget.Mindfeat.FeldEingabe" parent="Widget.AppCompat.EditText">
         <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
         <item name="android:textSize">18sp</item>
         <!-- Textfarbe und Platzhalterfarbe -->

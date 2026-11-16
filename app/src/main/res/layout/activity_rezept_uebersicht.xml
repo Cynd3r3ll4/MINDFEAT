@@ -58,7 +58,7 @@
 
         <TextView
             android:id="@+id/tvRezeptSuche"
-            style="@style/TextAppearance.Mindfeat.SucheLabel"
+            style="@style/TextAppearance.Mindfeat.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
@@ -75,11 +75,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                style="@style/Widget.Mindfeat.SuchfeldContainer">
+                style="@style/Widget.Mindfeat.FeldContainer">
 
                     <EditText
                         android:id="@+id/etRezeptSuche"
-                        style="@style/Widget.Mindfeat.SuchfeldEingabe"
+                        style="@style/Widget.Mindfeat.FeldEingabe"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:hint="@string/rezept_suche_platzhalter"
