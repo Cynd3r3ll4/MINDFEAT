@@ -138,12 +138,23 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         LinearLayout zeile = new LinearLayout(this);
         zeile.setOrientation(LinearLayout.HORIZONTAL);
         zeile.setGravity(Gravity.CENTER_VERTICAL);
+        zeile.setClipChildren(false);
+        zeile.setClipToPadding(false);
+
         EditText menge = neuesEingabefeld("Menge", android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
         EditText einheit = neuesEingabefeld("Einheit", android.text.InputType.TYPE_CLASS_TEXT);
         EditText zutat = neuesEingabefeld("Zutat", android.text.InputType.TYPE_CLASS_TEXT);
-        zeile.addView(eingabefeldContainer(menge), new LinearLayout.LayoutParams(0, dp(52), 1f));
-        zeile.addView(eingabefeldContainer(einheit), new LinearLayout.LayoutParams(0, dp(52), 1f));
-        zeile.addView(eingabefeldContainer(zutat), new LinearLayout.LayoutParams(0, dp(52), 2f));
+
+        LinearLayout.LayoutParams pMenge = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
+        pMenge.rightMargin = dp(8);
+        LinearLayout.LayoutParams pEinheit = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
+        pEinheit.rightMargin = dp(8);
+        LinearLayout.LayoutParams pZutat = new LinearLayout.LayoutParams(0, dp(48), 2.5f);
+
+        zeile.addView(eingabefeldContainer(menge), pMenge);
+        zeile.addView(eingabefeldContainer(einheit), pEinheit);
+        zeile.addView(eingabefeldContainer(zutat), pZutat);
+
         LinearLayout.LayoutParams zeilenParameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         zeilenParameter.bottomMargin = dp(8);
         layoutZutaten.addView(zeile, zeilenParameter);
@@ -154,12 +165,11 @@ public class RezeptErstellenActivity extends AppCompatActivity {
 
     // Eine neue Eingabezeile für einen Arbeitsschritt erzeugen
     private void schrittHinzufuegen() {
-        EditText schritt = neuesEingabefeld("Arbeitsschritt beschreiben", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        schritt.setMinLines(2);
-        schritt.setGravity(Gravity.TOP | Gravity.START);
-        MaterialCardView container = eingabefeldContainer(schritt, true);
-        LinearLayout.LayoutParams parameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        EditText schritt = neuesEingabefeld("Arbeitsschritt beschreiben", android.text.InputType.TYPE_CLASS_TEXT);
+        MaterialCardView container = eingabefeldContainer(schritt, false);
+        LinearLayout.LayoutParams parameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48));
         parameter.topMargin = dp(8);
+        parameter.bottomMargin = dp(8);
         layoutArbeitsschritte.addView(container, parameter);
         schrittFelder.add(schritt);
     }
@@ -182,11 +192,10 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         MaterialCardView container = new MaterialCardView(this);
         container.setRadius(dp(10));
         container.setCardElevation(dp(3));
-        container.setUseCompatPadding(true);
         container.setStrokeWidth(0);
         int oberflaechenfarbe = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface, Color.WHITE);
         container.setCardBackgroundColor(oberflaechenfarbe);
-        int height = wrapContent ? MaterialCardView.LayoutParams.WRAP_CONTENT : dp(52);
+        int height = wrapContent ? MaterialCardView.LayoutParams.WRAP_CONTENT : MaterialCardView.LayoutParams.MATCH_PARENT;
         container.addView(feld, new MaterialCardView.LayoutParams(MaterialCardView.LayoutParams.MATCH_PARENT, height));
         return container;
     }
