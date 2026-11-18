@@ -144,17 +144,23 @@
 
             <Button
                 android:id="@+id/btnBildGalerie"
+                style="@style/Widget.Mindfeat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:text="@string/rezept_galerie" />
 
             <Button
                 android:id="@+id/btnBildKamera"
+                style="@style/Widget.Mindfeat.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:text="@string/rezept_kamera" />
 
         </LinearLayout>
@@ -213,12 +219,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnZutatHinzufuegen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Widget.Mindfeat.AktionsIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="end"
-            android:text="@string/zutaten_hinzufuegen" />
+            android:contentDescription="@string/alternativtext_zutat_hinzufuegen"
+            android:src="@drawable/ic_plus" />
 
         <TextView
             style="@style/TextAppearance.Mindfeat.Label"
@@ -233,26 +241,46 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnArbeitsschrittHinzufuegen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Widget.Mindfeat.AktionsIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="end"
-            android:text="@string/arbeitsschritte_hinzufuegen" />
+            android:contentDescription="@string/alternativtext_arbeitsschritt_hinzufuegen"
+            android:src="@drawable/ic_plus" />
 
-        <Button
-            android:id="@+id/btnRezeptSpeichern"
+        <!-- Abbrechen- und Speichern-Button -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="@string/speichern" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnRezeptAbbrechen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/abbrechen" />
+            <Button
+                android:id="@+id/btnRezeptAbbrechen"
+                style="@style/Widget.Mindfeat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/abbrechen"
+                app:iconPadding="8dp" />
+
+            <Button
+                android:id="@+id/btnRezeptSpeichern"
+                style="@style/Widget.Mindfeat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/speichern" />
+
+        </LinearLayout>
     </LinearLayout>
     </LinearLayout>
 </ScrollView>

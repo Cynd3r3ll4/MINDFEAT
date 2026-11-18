@@ -4,6 +4,7 @@
     <style name="TextAppearance.Mindfeat" parent="android:TextAppearance">
         <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textSize">18sp</item>
     </style>
 
@@ -54,13 +55,20 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <!-- Buttons (allgemein) -->
+    <style name="Widget.Mindfeat.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- Labels (Beschriftungen über Eingabefeldern) -->
     <style name="TextAppearance.Mindfeat.Label" parent="TextAppearance.Mindfeat">
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Suchfeld: äußere Fläche mit leichtem Schatten -->
+    <!-- Eingabefeld: äußere Fläche mit leichtem Schatten -->
     <style name="Widget.Mindfeat.FeldContainer"
         parent="Widget.Material3.CardView.Filled">
         <item name="cardCornerRadius">10dp</item>
@@ -73,6 +81,7 @@
     <style name="Widget.Mindfeat.FeldEingabe" parent="Widget.AppCompat.EditText">
         <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
         <!-- Textfarbe und Platzhalterfarbe -->
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textColorHint">?attr/colorOnSurface</item>

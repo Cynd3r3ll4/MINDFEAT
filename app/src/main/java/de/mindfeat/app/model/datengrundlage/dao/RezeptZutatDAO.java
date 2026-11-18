@@ -38,4 +38,10 @@ public interface RezeptZutatDAO {
     // Eine Rezept-Zutat-Zuordnung anhand ihrer ID abrufen
     @Query("SELECT * FROM rezept_zutaten WHERE id = :id")
     RezeptZutat nachIdAbrufen(int id);
+
+    // Alle bereits verwendeten Einheiten aus den Rezept-Zutat-Zuordnungen abrufen
+    @Query("SELECT einheit FROM rezept_zutaten " +
+            "WHERE einheit IS NOT NULL AND TRIM(einheit) != '' " +
+            "ORDER BY einheit COLLATE NOCASE ASC")
+    List<String> alleEinheitenAbrufen();
 }

@@ -33,10 +33,10 @@
     <string name="rezept_portionen_standard">2</string>
 
     <string name="zutaten">Zutaten</string>
-    <string name="zutaten_hinzufuegen">Zutaten hinzufügen</string>
+    <string name="alternativtext_zutat_hinzufuegen">Zutaten hinzufügen</string>
 
     <string name="arbeitsschritte">Arbeitsschritte</string>
-    <string name="arbeitsschritte_hinzufuegen">Arbeitsschritte hinzufügen</string>
+    <string name="alternativtext_arbeitsschritt_hinzufuegen">Arbeitsschritte hinzufügen</string>
 
     <string name="kategorie">Kategorie</string>
 
@@ -46,6 +46,7 @@
 
     <string name="rezept_fehler_titel">Bitte gib deinem Rezept einen Namen.</string>
     <string name="rezept_fehler_portionen">Bitte gib mindestens eine Portion an.</string>
+    <string name="rezept_fehler_zutaten_pflicht">Bitte gib mindestens eine vollständige Zutat an.</string>
     <string name="rezept_fehler_zutat_unvollstaendig">Bitte gib eine Menge und Einheit für die Zutat ein.</string>
     <string name="rezept_fehler_zutat_menge">Bitte gib eine gültige Menge größer als 0 ein.</string>
     <string name="rezept_fehler_kamera">Die Kamera konnte nicht geöffnet werden.</string>

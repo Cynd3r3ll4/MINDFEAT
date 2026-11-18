@@ -1,6 +1,7 @@
 package de.mindfeat.app.controller;
 
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 import de.mindfeat.app.model.vermittler.RezeptVermittler;
 
 import java.util.List;
@@ -28,6 +29,11 @@ public class RezeptController {
     // Alle gespeicherten Rezepte abrufen
     public void alleAbrufen(Callback<List<Rezept>> callback) {
         ausfuehren(rezeptVermittler::alleAbrufen, callback);
+    }
+
+    // Alle bereits verwendeten Einheiten für Autocomplete abrufen
+    public void alleEinheitenAbrufen(Callback<List<String>> callback) {
+        ausfuehren(rezeptVermittler::alleEinheitenAbrufen, callback);
     }
 
     // Rezepte anhand eines Suchbegriffs suchen
@@ -87,5 +93,10 @@ public class RezeptController {
     // Interne Schnittstelle für auszuführende Operationen
     private interface Operation<T> {
         T ausfuehren();
+    }
+
+    // Alle gespeicherten Zutaten für die Autovervollständigung abrufen
+    public void alleZutatenAbrufen(Callback<List<Zutat>> callback) {
+        ausfuehren(rezeptVermittler::alleZutatenAbrufen, callback);
     }
 }

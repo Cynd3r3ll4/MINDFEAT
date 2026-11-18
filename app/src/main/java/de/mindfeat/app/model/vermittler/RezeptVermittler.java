@@ -158,7 +158,7 @@ public class RezeptVermittler {
                     if (angabe == null) {
                         throw new IllegalArgumentException("Eine Zutat muss ausgewählt sein.");
                     }
-                    Zutat zutat = zutatDAO.nachNameAbrufen(angabe.getName());
+                    Zutat zutat = zutatNachNameFinden(angabe.getName());
                     if (zutat == null) { // wenn Zutat noch nicht existiert
                         zutat = new Zutat(angabe.getName());
                         long zutatId = zutatDAO.einfuegen(zutat);
@@ -212,20 +212,17 @@ public class RezeptVermittler {
             for (RezeptZutat rezeptZutat : alteZutaten) {
                 rezeptZutatDAO.loeschen(rezeptZutat);
             }
-            List<RezeptKategorie> alteKategorien =
-                    rezeptKategorieDAO.nachRezeptIdAbrufen(rezeptId);
+            List<RezeptKategorie> alteKategorien = rezeptKategorieDAO.nachRezeptIdAbrufen(rezeptId);
             for (RezeptKategorie rezeptKategorie : alteKategorien) {
                 rezeptKategorieDAO.loeschen(rezeptKategorie);
             }
-            List<Zubereitungsschritt> alteSchritte =
-                    zubereitungsschrittDAO.nachRezeptIdAbrufen(rezeptId);
-
+            List<Zubereitungsschritt> alteSchritte = zubereitungsschrittDAO.nachRezeptIdAbrufen(rezeptId);
             for (Zubereitungsschritt schritt : alteSchritte) {
                 zubereitungsschrittDAO.loeschen(schritt);
             }
             if (zutaten != null) {
                 for (ZutatAngabe zutatAngabe : zutaten) {
-                    Zutat zutat = zutatDAO.nachNameAbrufen(zutatAngabe.getName());
+                    Zutat zutat = zutatNachNameFinden(zutatAngabe.getName());
                     if (zutat == null) {
                         zutat = new Zutat(zutatAngabe.getName());
                         long zutatId = zutatDAO.einfuegen(zutat);
@@ -259,6 +256,29 @@ public class RezeptVermittler {
         });
     }
 
+    // Alle bereits verwendeten Einheiten für Autocomplete-Vorschläge abrufen
+    public List<String> alleEinheitenAbrufen() {
+        List<String> gespeicherteEinheiten = rezeptZutatDAO.alleEinheitenAbrufen();
+        List<String> eindeutigeEinheiten = new ArrayList<>();
+        for (String einheit : gespeicherteEinheiten) {
+            if (einheit == null || einheit.trim().isEmpty()) {
+                continue;
+            }
+            String bereinigt = einheit.trim();
+            boolean bereitsVorhanden = false;
+            for (String vorhandeneEinheit : eindeutigeEinheiten) {
+                if (vorhandeneEinheit.equalsIgnoreCase(bereinigt)) {
+                    bereitsVorhanden = true;
+                    break;
+                }
+            }
+            if (!bereitsVorhanden) {
+                eindeutigeEinheiten.add(bereinigt);
+            }
+        }
+        return eindeutigeEinheiten;
+    }
+
     // Liste aller Rezepte abrufen
     public List<Rezept> alleAbrufen() {
         return rezeptDAO.alleAbrufen();
@@ -283,5 +303,24 @@ public class RezeptVermittler {
             return false;
         }
         return rezeptDAO.loeschen(rezept) > 0;
+    }
+
+    // Alle bereits gespeicherten Zutaten für Eingabevorschläge abrufen
+    public List<Zutat> alleZutatenAbrufen() {
+        return zutatDAO.alleAbrufen();
+    }
+
+    // Eine vorhandene Zutat unabhängig von Groß-/Kleinschreibung finden
+    private Zutat zutatNachNameFinden(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        String gesuchterName = name.trim();
+        for (Zutat zutat : zutatDAO.alleAbrufen()) {
+            if (zutat.getName().equalsIgnoreCase(gesuchterName)) {
+                return zutat;
+            }
+        }
+        return null;
     }
 }

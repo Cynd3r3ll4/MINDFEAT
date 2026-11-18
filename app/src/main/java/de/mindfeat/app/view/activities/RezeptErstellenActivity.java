@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,7 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,6 +63,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private String bildPfad;
     private ActivityResultLauncher<String> galerieLauncher;
     private ActivityResultLauncher<Uri> kameraLauncher;
+    private final List<String> vorhandeneEinheiten = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rezept_erstellen);
         ansichtenInitialisieren();
         controllerEinrichten();
+        einheitenVorschlaegeLaden();
         bildLauncherEinrichten();
         eingabefelderEinrichten();
         klickaktionenEinrichten();
@@ -97,6 +100,40 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         rezeptController = new RezeptController(vermittler, datenbankExecutor, this::runOnUiThread);
     }
 
+    // Bereits verwendete Einheiten aus Room laden
+    private void einheitenVorschlaegeLaden() {
+        rezeptController.alleEinheitenAbrufen(new RezeptController.Callback<>() {
+            @Override
+            public void beiErfolg(List<String> einheiten) {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                vorhandeneEinheiten.clear();
+                if (einheiten != null) {
+                    vorhandeneEinheiten.addAll(einheiten);
+                }
+                for (EditText feld : einheitenFelder) { // Bereits vorhandene Eingabefelder aktualisieren
+                    if (feld instanceof AutoCompleteTextView) {
+                        einheitenAdapterSetzen((AutoCompleteTextView) feld);
+                    }
+                }
+            }
+            @Override
+            public void beiFehler(Exception exception) {
+                // manuelle Eingabe bleibt weiterhin möglich.
+            }
+        }
+        );
+    }
+
+
+    // Vorschlagsadapter für ein Einheitenfeld setzen
+    private void einheitenAdapterSetzen(AutoCompleteTextView feld) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(RezeptErstellenActivity.this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(vorhandeneEinheiten));
+        feld.setAdapter(adapter);
+        feld.setThreshold(1);
+    }
+
     private void bildLauncherEinrichten() {
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                     if (uri != null) {
@@ -104,7 +141,6 @@ public class RezeptErstellenActivity extends AppCompatActivity {
                     }
                 }
         );
-
         kameraLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), erfolgreich -> {
                     if (Boolean.TRUE.equals(erfolgreich) && kameraUri != null) {
                         bildSpeichern(kameraUri);
@@ -140,21 +176,18 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         zeile.setGravity(Gravity.CENTER_VERTICAL);
         zeile.setClipChildren(false);
         zeile.setClipToPadding(false);
-
         EditText menge = neuesEingabefeld("Menge", android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        EditText einheit = neuesEingabefeld("Einheit", android.text.InputType.TYPE_CLASS_TEXT);
+        AutoCompleteTextView einheit = neuesAutoCompleteEingabefeld("Einheit", android.text.InputType.TYPE_CLASS_TEXT);
+        einheitenAdapterSetzen(einheit);
         EditText zutat = neuesEingabefeld("Zutat", android.text.InputType.TYPE_CLASS_TEXT);
-
         LinearLayout.LayoutParams pMenge = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
         pMenge.rightMargin = dp(8);
         LinearLayout.LayoutParams pEinheit = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
         pEinheit.rightMargin = dp(8);
         LinearLayout.LayoutParams pZutat = new LinearLayout.LayoutParams(0, dp(48), 2.5f);
-
         zeile.addView(eingabefeldContainer(menge), pMenge);
         zeile.addView(eingabefeldContainer(einheit), pEinheit);
         zeile.addView(eingabefeldContainer(zutat), pZutat);
-
         LinearLayout.LayoutParams zeilenParameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         zeilenParameter.bottomMargin = dp(8);
         layoutZutaten.addView(zeile, zeilenParameter);
@@ -172,6 +205,16 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         parameter.bottomMargin = dp(8);
         layoutArbeitsschritte.addView(container, parameter);
         schrittFelder.add(schritt);
+    }
+
+    // Hilfsmethode für Autocomplete-Eingabefelder
+    private AutoCompleteTextView neuesAutoCompleteEingabefeld(String hinweis, int inputType) {
+        AutoCompleteTextView feld = new AutoCompleteTextView(this, null, 0, R.style.Widget_Mindfeat_FeldEingabe);
+        feld.setHint(hinweis);
+        feld.setInputType(inputType);
+        feld.setSingleLine(true);
+        feld.setThreshold(1);
+        return feld;
     }
 
     // Hilfsmethode: Eingabefeld errichten
@@ -280,6 +323,14 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         if (zutaten == null) {
             return;
         }
+        if (zutaten.isEmpty()) {
+            if (!zutatenFelder.isEmpty()) {
+                zutatenFelder.get(0).setError(getString(R.string.rezept_fehler_zutaten_pflicht));
+                zutatenFelder.get(0).requestFocus();
+            }
+            Toast.makeText(this, R.string.rezept_fehler_zutaten_pflicht, Toast.LENGTH_LONG).show();
+            return;
+        }
         List<String> kategorien = kategorienZusammenstellen();
         List<String> schritte = schritteZusammenstellen();
         Rezept rezept;
@@ -290,7 +341,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
             return;
         }
         btnSpeichern.setEnabled(false);
-        rezeptController.anlegen(rezept, zutaten, kategorien, schritte, new RezeptController.Callback<Integer>() {
+        rezeptController.anlegen(rezept, zutaten, kategorien, schritte, new RezeptController.Callback<>() {
                     @Override
                     public void beiErfolg(Integer rezeptId) {
                         if (isFinishing() || isDestroyed()) {
@@ -300,7 +351,8 @@ public class RezeptErstellenActivity extends AppCompatActivity {
                         setResult(RESULT_OK);
                         finish();
                     }
-                    @Override
+
+            @Override
                     public void beiFehler(Exception exception) {
                         if (isFinishing() || isDestroyed()) {
                             return;
