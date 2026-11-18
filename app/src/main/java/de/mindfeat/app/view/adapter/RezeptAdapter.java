@@ -1,7 +1,6 @@
 package de.mindfeat.app.view.adapter;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.mindfeat.app.R;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.view.helfer.BildHelfer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,17 +45,27 @@ public class RezeptAdapter extends RecyclerView.Adapter<RezeptAdapter.RezeptView
     public void onBindViewHolder(@NonNull RezeptViewHolder holder, int position) {
         Rezept rezept = rezepte.get(position);
         holder.tvRezeptTitel.setText(rezept.getTitel());
-        holder.ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery); // Platzhalterbild
+        holder.ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery);
         String bildPfad = rezept.getBildPfad();
-        if (bildPfad == null || bildPfad.trim().isEmpty()) { // Kein Bild vorhanden
+        if (bildPfad == null || bildPfad.trim().isEmpty()) {
             holder.ivRezeptBild.setTag(null);
             return;
         }
-        holder.ivRezeptBild.setTag(bildPfad); // Pfad merken, damit kein Bild in einem falschen wiederverwendeten Listeneintrag landet
+        holder.ivRezeptBild.setTag(bildPfad);
+        int zielBreite = holder.ivRezeptBild.getWidth();
+        int zielHoehe = holder.ivRezeptBild.getHeight();
+        if (zielBreite <= 0) {
+            zielBreite = (int) (88 * holder.itemView.getResources().getDisplayMetrics().density);
+        }
+        if (zielHoehe <= 0) {
+            zielHoehe = (int) (88 * holder.itemView.getResources().getDisplayMetrics().density);
+        }
+        final int breite = zielBreite;
+        final int hoehe = zielHoehe;
         bildExecutor.execute(() -> {
-            Bitmap bitmap = BitmapFactory.decodeFile(bildPfad);
+            Bitmap bitmap = BildHelfer.skaliertLaden(bildPfad, breite, hoehe);
             mainHandler.post(() -> {
-                if (Objects.equals(holder.ivRezeptBild.getTag(), bildPfad)) { // Prüfen, ob der Eintrag noch zu diesem Bild gehört
+                if (Objects.equals(holder.ivRezeptBild.getTag(), bildPfad)) {
                     if (bitmap != null) {
                         holder.ivRezeptBild.setImageBitmap(bitmap);
                     }

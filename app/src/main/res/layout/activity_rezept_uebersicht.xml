@@ -69,19 +69,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
                 style="@style/Widget.Mindfeat.FeldContainer">
 
                     <EditText
                         android:id="@+id/etRezeptSuche"
                         style="@style/Widget.Mindfeat.FeldEingabe"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="match_parent"
                         android:hint="@string/rezept_suche_platzhalter"
                         android:inputType="text"
                         android:singleLine="true"

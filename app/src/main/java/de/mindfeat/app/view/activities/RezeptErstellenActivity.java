@@ -42,7 +42,9 @@ import de.mindfeat.app.R;
 import de.mindfeat.app.controller.RezeptController;
 import de.mindfeat.app.model.datengrundlage.ZentraleDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 import de.mindfeat.app.model.vermittler.RezeptVermittler;
+import de.mindfeat.app.view.helfer.BildHelfer;
 
 public class RezeptErstellenActivity extends AppCompatActivity {
 
@@ -50,6 +52,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private EditText etKategorien;
     private EditText etPortionen;
     private ImageView ivRezeptBild;
+    private MaterialCardView cardRezeptVorschau;
     private LinearLayout layoutZutaten;
     private LinearLayout layoutArbeitsschritte;
     private Button btnSpeichern;
@@ -64,6 +67,8 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> galerieLauncher;
     private ActivityResultLauncher<Uri> kameraLauncher;
     private final List<String> vorhandeneEinheiten = new ArrayList<>();
+    private final List<String> vorhandeneZutaten = new ArrayList<>();
+    private final ExecutorService bildVorschauExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +78,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         ansichtenInitialisieren();
         controllerEinrichten();
         einheitenVorschlaegeLaden();
+        zutatenVorschlaegeLaden();
         bildLauncherEinrichten();
         eingabefelderEinrichten();
         klickaktionenEinrichten();
@@ -84,6 +90,8 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         etKategorien = findViewById(R.id.etRezeptKategorien);
         etPortionen = findViewById(R.id.etRezeptPortionen);
         ivRezeptBild = findViewById(R.id.ivRezeptVorschau);
+        cardRezeptVorschau = findViewById(R.id.cardRezeptVorschau);
+        cardRezeptVorschau.setVisibility(View.GONE);
         layoutZutaten = findViewById(R.id.layoutZutaten);
         layoutArbeitsschritte = findViewById(R.id.layoutArbeitsschritte);
         layoutZutaten.setClipChildren(false);
@@ -126,13 +134,53 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         );
     }
 
-
     // Vorschlagsadapter für ein Einheitenfeld setzen
     private void einheitenAdapterSetzen(AutoCompleteTextView feld) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(RezeptErstellenActivity.this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(vorhandeneEinheiten));
         feld.setAdapter(adapter);
         feld.setThreshold(1);
     }
+
+    // Bereits gespeicherte Zutaten aus Room laden
+    private void zutatenVorschlaegeLaden() {
+
+        rezeptController.alleZutatenAbrufen(
+                new RezeptController.Callback<>() {
+                    @Override
+                    public void beiErfolg(List<Zutat> zutaten) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        vorhandeneZutaten.clear();
+                        if (zutaten != null) {
+                            for (Zutat zutat : zutaten) {
+                                if (zutat != null && zutat.getName() != null && !zutat.getName().trim().isEmpty()) {
+                                    vorhandeneZutaten.add(zutat.getName());
+                                }
+                            }
+                        }
+                        for (EditText feld : zutatenFelder) {
+                            if (feld instanceof AutoCompleteTextView) {
+                                zutatenAdapterSetzen(
+                                        (AutoCompleteTextView) feld
+                                );
+                            }
+                        }
+                    }
+                    @Override
+                    public void beiFehler(Exception exception) {
+                        // Manuelle Eingabe bleibt weiterhin möglich.
+                    }
+                }
+        );
+    }
+    // Vorschlagsadapter für ein Zutatenfeld setzen
+    private void zutatenAdapterSetzen(AutoCompleteTextView feld) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(RezeptErstellenActivity.this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(vorhandeneZutaten));
+        feld.setAdapter(adapter);
+        feld.setThreshold(1);
+    }
+
 
     private void bildLauncherEinrichten() {
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -176,15 +224,17 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         zeile.setGravity(Gravity.CENTER_VERTICAL);
         zeile.setClipChildren(false);
         zeile.setClipToPadding(false);
+        zeile.setPadding(dp(3), 0, dp(3), 0);
         EditText menge = neuesEingabefeld("Menge", android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
         AutoCompleteTextView einheit = neuesAutoCompleteEingabefeld("Einheit", android.text.InputType.TYPE_CLASS_TEXT);
         einheitenAdapterSetzen(einheit);
-        EditText zutat = neuesEingabefeld("Zutat", android.text.InputType.TYPE_CLASS_TEXT);
-        LinearLayout.LayoutParams pMenge = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
+        AutoCompleteTextView zutat = neuesAutoCompleteEingabefeld("Zutat", android.text.InputType.TYPE_CLASS_TEXT);
+        zutatenAdapterSetzen(zutat);
+        LinearLayout.LayoutParams pMenge = new LinearLayout.LayoutParams(0, dp(52), 1.5f);
         pMenge.rightMargin = dp(8);
-        LinearLayout.LayoutParams pEinheit = new LinearLayout.LayoutParams(0, dp(48), 1.5f);
+        LinearLayout.LayoutParams pEinheit = new LinearLayout.LayoutParams(0, dp(52), 1.5f);
         pEinheit.rightMargin = dp(8);
-        LinearLayout.LayoutParams pZutat = new LinearLayout.LayoutParams(0, dp(48), 2.5f);
+        LinearLayout.LayoutParams pZutat = new LinearLayout.LayoutParams(0, dp(52), 2.5f);
         zeile.addView(eingabefeldContainer(menge), pMenge);
         zeile.addView(eingabefeldContainer(einheit), pEinheit);
         zeile.addView(eingabefeldContainer(zutat), pZutat);
@@ -200,7 +250,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private void schrittHinzufuegen() {
         EditText schritt = neuesEingabefeld("Arbeitsschritt beschreiben", android.text.InputType.TYPE_CLASS_TEXT);
         MaterialCardView container = eingabefeldContainer(schritt, false);
-        LinearLayout.LayoutParams parameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48));
+        LinearLayout.LayoutParams parameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(52));
         parameter.topMargin = dp(8);
         parameter.bottomMargin = dp(8);
         layoutArbeitsschritte.addView(container, parameter);
@@ -266,7 +316,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         }
     }
 
-    // Bild aus Galerie oder Kamera in den privaten App-Speicher kopieren
+    // Bild aus Galerie oder Kamera in den privaten App-Speicher kopieren und mit EXIF korrekt ausrichten
     private void bildSpeichern(Uri quelle) {
         File bildOrdner = new File(getFilesDir(), "rezept_bilder");
         if (!bildOrdner.exists() && !bildOrdner.mkdirs()) {
@@ -277,7 +327,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         try (InputStream eingabe = getContentResolver().openInputStream(quelle);
              OutputStream ausgabe = new FileOutputStream(zielDatei)) {
             if (eingabe == null) {
-                throw new IllegalStateException("Bildquelle konnte nicht geöffnet werden.");
+                throw new IllegalStateException("Die Bilddatei konnte nicht geöffnet werden.");
             }
             byte[] puffer = new byte[8192];
             int anzahl;
@@ -285,15 +335,28 @@ public class RezeptErstellenActivity extends AppCompatActivity {
                 ausgabe.write(puffer, 0, anzahl);
             }
             bildPfad = zielDatei.getAbsolutePath();
-            Bitmap bitmap = BitmapFactory.decodeFile(bildPfad);
-            if (bitmap != null) {
-                ivRezeptBild.setImageBitmap(bitmap);
-                ivRezeptBild.setVisibility(View.VISIBLE);
-            }
-        } catch (Exception exception) {
+            ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery);
+            ivRezeptBild.setVisibility(View.VISIBLE);
+            cardRezeptVorschau.setVisibility(View.VISIBLE);
+            String aktuellerBildPfad = bildPfad;
+            bildVorschauExecutor.execute(() -> {
+                int zielBreite = getResources().getDisplayMetrics().widthPixels;
+                int zielHoehe = (int) (180 * getResources().getDisplayMetrics().density);
+                Bitmap bitmap = BildHelfer.skaliertLaden(aktuellerBildPfad, zielBreite, zielHoehe);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()
+                            || !aktuellerBildPfad.equals(bildPfad)) {
+                        return;
+                    }
+                    if (bitmap != null) {
+                        ivRezeptBild.setImageBitmap(bitmap);
+                    } else {
+                        Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_fehler_bild, Toast.LENGTH_LONG).show();
+                    }
+                });
+            });
+        } catch (Exception exception) { // unvollständige Dateien nicht behalten
             if (zielDatei.exists()) {
-                // Eine unvollständige Datei nicht behalten
-                //noinspection ResultOfMethodCallIgnored
                 zielDatei.delete();
             }
             Toast.makeText(this, R.string.rezept_fehler_bild, Toast.LENGTH_LONG).show();
@@ -428,6 +491,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         if (datenbankExecutor != null) {
             datenbankExecutor.shutdown();
         }
+        bildVorschauExecutor.shutdownNow();
         super.onDestroy();
     }
 }
