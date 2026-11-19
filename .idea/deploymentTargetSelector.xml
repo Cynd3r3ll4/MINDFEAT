@@ -101,7 +101,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="RezeptVermittlerTest">
+      <SelectionState runConfigName="MainActivityTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-11-18T19:46:57.469600400Z">
           <Target type="DEFAULT_BOOT">
@@ -125,7 +125,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="BildHelferTest">
+      <SelectionState runConfigName="RezeptUebersichtActivityTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-11-18T19:46:57.469600400Z">
           <Target type="DEFAULT_BOOT">
@@ -149,7 +149,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="RezeptAdapterTest">
+      <SelectionState runConfigName="rezepteOeffnetRezeptuebersichtMitSuchfeldUndHinzufuegen()">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-11-18T19:46:57.469600400Z">
           <Target type="DEFAULT_BOOT">
@@ -173,7 +173,7 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="RezeptErstellenActivityTest">
+      <SelectionState runConfigName="RezeptNavigationEsspressoTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-11-18T19:46:57.469600400Z">
           <Target type="DEFAULT_BOOT">

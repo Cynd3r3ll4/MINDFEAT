@@ -125,6 +125,72 @@ public class RezeptControllerTest {
         assertTrue(callback.fehler instanceof IllegalArgumentException);
     }
 
+    // Ein Rezept wird anhand eines Teilbegriffs im Titel gefunden
+    @Test
+    public void suchAbrufenFindetRezeptAnhandDesTitels() {
+        Rezept rezept = new Rezept("Kartoffelsuppe", null, 2);
+        rezeptController.anlegen(rezept, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Rezept>> callback = new ErgebnisCallback<>();
+        rezeptController.suchAbrufen("kartoffel", callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(1, callback.ergebnis.size());
+        assertEquals("Kartoffelsuppe", callback.ergebnis.get(0).getTitel());
+    }
+
+    // Die Suche berücksichtigt auch Kategorien
+    @Test
+    public void suchAbrufenFindetRezeptAnhandDerKategorie() {
+        Rezept rezept = new Rezept("Gemuesepfanne", null, 2);
+        rezeptController.anlegen(rezept, Collections.emptyList(), Collections.singletonList("Vegetarisch"), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Rezept>> callback = new ErgebnisCallback<>();
+        rezeptController.suchAbrufen("vegetarisch", callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(1, callback.ergebnis.size());
+        assertEquals("Gemuesepfanne", callback.ergebnis.get(0).getTitel());
+    }
+
+    // Die Suche berücksichtigt auch Zutaten
+    @Test
+    public void suchAbrufenFindetRezeptAnhandDerZutat() {
+        Rezept rezept = new Rezept("Paprikasuppe", null, 2);
+        List<RezeptVermittler.ZutatAngabe> zutaten = Collections.singletonList(new RezeptVermittler.ZutatAngabe("Paprika", 2, "Stück"));
+        rezeptController.anlegen(rezept, zutaten, Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Rezept>> callback = new ErgebnisCallback<>();
+        rezeptController.suchAbrufen("paprika", callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(1, callback.ergebnis.size());
+        assertEquals("Paprikasuppe", callback.ergebnis.get(0).getTitel());
+    }
+
+    // Ein Suchbegriff ohne Treffer liefert eine leere Liste
+    @Test
+    public void suchAbrufenOhneTrefferLiefertLeereListe() {
+        Rezept rezept = new Rezept("Kartoffelsuppe", null, 2);
+        rezeptController.anlegen(rezept, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Rezept>> callback = new ErgebnisCallback<>();
+        rezeptController.suchAbrufen("Pizza", callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertTrue(callback.ergebnis.isEmpty());
+    }
+
+    // Ein leerer Suchbegriff liefert alle gespeicherten Rezepte
+    @Test
+    public void suchAbrufenMitLeeremSuchbegriffLiefertAlleRezepte() {
+        Rezept rezept1 = new Rezept("Kartoffelsuppe", null, 2);
+        Rezept rezept2 = new Rezept("Gemuesepfanne", null, 3);
+        rezeptController.anlegen(rezept1, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        rezeptController.anlegen(rezept2, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Rezept>> callback = new ErgebnisCallback<>();
+        rezeptController.suchAbrufen("   ", callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(2, callback.ergebnis.size());
+    }
+
     // Einfacher Callback zum Speichern des Testergebnisses
     private static class ErgebnisCallback<T> implements RezeptController.Callback<T> {
         private T ergebnis;
