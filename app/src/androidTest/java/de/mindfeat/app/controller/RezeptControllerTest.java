@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 import de.mindfeat.app.model.vermittler.RezeptVermittler;
 
 import org.junit.After;
@@ -138,5 +139,49 @@ public class RezeptControllerTest {
         public void beiFehler(Exception exception) {
             this.fehler = exception;
         }
+    }
+
+    // Alle verwendeten Einheiten werden über den Controller abgerufen
+    @Test
+    public void alleEinheitenAbrufen() {
+        Rezept rezept = new Rezept("Kartoffelsuppe", null, 2);
+        List<RezeptVermittler.ZutatAngabe> zutaten = Arrays.asList(
+                new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g"),
+                new RezeptVermittler.ZutatAngabe("Milch", 200.0, "ml"));
+        rezeptController.anlegen(rezept, zutaten, Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<String>> callback = new ErgebnisCallback<>();
+        rezeptController.alleEinheitenAbrufen(callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(Arrays.asList("g", "ml"), callback.ergebnis);
+    }
+
+    // Alle gespeicherten Zutaten werden über den Controller abgerufen
+    @Test
+    public void alleZutatenAbrufen() {
+        Rezept rezept = new Rezept("Kartoffelsuppe", null, 2);
+        List<RezeptVermittler.ZutatAngabe> zutaten = Arrays.asList(
+                new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "g"),
+                new RezeptVermittler.ZutatAngabe("Zwiebeln", 2.0, "Stück"));
+        rezeptController.anlegen(rezept, zutaten, Collections.emptyList(), Collections.emptyList(), new ErgebnisCallback<>());
+        ErgebnisCallback<List<Zutat>> callback = new ErgebnisCallback<>();
+        rezeptController.alleZutatenAbrufen(callback);
+        assertNull(callback.fehler);
+        assertNotNull(callback.ergebnis);
+        assertEquals(2, callback.ergebnis.size());
+        assertEquals("Kartoffeln", callback.ergebnis.get(0).getName());
+        assertEquals("Zwiebeln", callback.ergebnis.get(1).getName());
+    }
+
+    // Ein fehlender Callback beim Einheitenabruf wird abgewiesen
+    @Test(expected = IllegalArgumentException.class)
+    public void alleEinheitenAbrufenOhneCallback() {
+        rezeptController.alleEinheitenAbrufen(null);
+    }
+
+    // Ein fehlender Callback beim Zutatenabruf wird abgewiesen
+    @Test(expected = IllegalArgumentException.class)
+    public void alleZutatenAbrufenOhneCallback() {
+        rezeptController.alleZutatenAbrufen(null);
     }
 }

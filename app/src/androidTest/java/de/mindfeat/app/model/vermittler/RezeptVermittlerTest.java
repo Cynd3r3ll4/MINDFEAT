@@ -25,6 +25,7 @@ import de.mindfeat.app.model.datengrundlage.dao.ZubereitungsschrittDAO;
 import de.mindfeat.app.model.datengrundlage.dao.ZutatDAO;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Kategorie;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptZutat;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 
 @RunWith(AndroidJUnit4.class)
@@ -204,5 +205,111 @@ public class RezeptVermittlerTest {
         assertEquals(1, details.getZubereitungsschritte().size());
         List<Rezept> rezepte = rezeptVermittler.alleAbrufen();
         assertEquals(2, rezepte.size());
+    }
+
+    // Bereits verwendete Einheiten werden bereinigt und ohne Duplikate zurückgegeben
+    @Test
+    public void alleEinheitenAbrufenEntferntDoppelteEinheiten() {
+        Rezept rezept = rezeptErstellen("Kartoffelsuppe");
+        Zutat kartoffeln = zutatErstellen("Kartoffeln");
+        Zutat milch = zutatErstellen("Milch");
+        Zutat zwiebeln = zutatErstellen("Zwiebeln");
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), kartoffeln.getId(), 500.0, "g"));
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), milch.getId(), 200.0, "G"));
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), zwiebeln.getId(), 2.0, "ml"));
+        List<String> einheiten = rezeptVermittler.alleEinheitenAbrufen();
+        assertEquals(2, einheiten.size());
+        assertTrue(einheitEnthalten(einheiten, "g"));
+        assertTrue(einheitEnthalten(einheiten, "ml"));
+    }
+
+    // Alle gespeicherten Zutaten werden zurückgegeben
+    @Test
+    public void alleZutatenAbrufenGibtGespeicherteZutatenZurueck() {
+        zutatErstellen("Kartoffeln");
+        zutatErstellen("Zwiebeln");
+        List<Zutat> zutaten = rezeptVermittler.alleZutatenAbrufen();
+        assertEquals(2, zutaten.size());
+        assertEquals("Kartoffeln", zutaten.get(0).getName());
+        assertEquals("Zwiebeln", zutaten.get(1).getName());
+    }
+
+    // Bei einer leeren Zutatenliste wird eine leere Liste zurückgegeben
+    @Test
+    public void alleZutatenAbrufenOhneEintraege() {
+        List<Zutat> zutaten = rezeptVermittler.alleZutatenAbrufen();
+        assertNotNull(zutaten);
+        assertTrue(zutaten.isEmpty());
+    }
+
+    // Eine Einheit wird unabhängig von der Groß-/Kleinschreibung erkannt
+    private boolean einheitEnthalten(List<String> einheiten, String gesucht) {
+        for (String einheit : einheiten) {
+            if (einheit.equalsIgnoreCase(gesucht)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Eine Rezept-Zutat-Angabe übernimmt bereinigte Eingaben
+    @Test
+    public void zutatAngabeBereinigtEingabenUndStelltGetterBereit() {
+        RezeptVermittler.ZutatAngabe angabe = new RezeptVermittler.ZutatAngabe("  Kartoffeln  ", 500.0, "  g  ");
+        assertEquals("Kartoffeln", angabe.getName());
+        assertEquals(500.0, angabe.getMenge(), 0.001);
+        assertEquals("g", angabe.getEinheit());
+    }
+
+    // Eine Zutat ohne Namen ist nicht zulässig
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeOhneNamenIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe("   ", 500.0, "g");
+    }
+
+    // Eine Menge von null oder kleiner ist nicht zulässig
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeMitMengeNullIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe("Kartoffeln", 0.0, "g");
+    }
+
+    // Eine nicht endliche Menge ist nicht zulässig
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeMitUnendlicherMengeIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe(
+                "Kartoffeln", Double.POSITIVE_INFINITY, "g");
+    }
+
+    // Eine fehlende Einheit ist nicht zulässig
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeOhneEinheitIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe("Kartoffeln", 500.0, "  ");
+    }
+
+    // negative Mengen werden nicht akzeptiert
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeMitNegativerMengeIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe("Kartoffeln", -1.0, "g");
+    }
+
+    // EIngabe einer nicht-Zahl wird nicht akzeptiert
+    @Test(expected = IllegalArgumentException.class)
+    public void zutatAngabeMitNaNAlsMengeIstUngueltig() {
+        new RezeptVermittler.ZutatAngabe("Kartoffeln", Double.NaN, "g");
+    }
+
+    // Hilfsmethoden: Rezept und Zutat erstellen
+    private Rezept rezeptErstellen(String titel) {
+        Rezept rezept = new Rezept(titel, null, 2);
+        long id = rezeptDAO.einfuegen(rezept);
+        rezept.setId((int) id);
+        return rezept;
+    }
+
+    private Zutat zutatErstellen(String name) {
+        Zutat zutat = new Zutat(name);
+        long id = zutatDAO.einfuegen(zutat);
+        zutat.setId((int) id);
+        return zutat;
     }
 }

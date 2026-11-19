@@ -12,11 +12,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 
@@ -167,5 +169,27 @@ public class RezeptZutatDAOTest {
         assertEquals(1, anzahlGeloeschterZutaten);
         assertNull(rezeptZutatDAO.nachIdAbrufen((int) zuordnungsId));
         assertNotNull(rezeptDAO.nachIdAbrufen(rezept.getId()));
+    }
+
+    // Alle verwendeten Einheiten werden alphabetisch sortiert abgerufen
+    @Test
+    public void alleEinheitenAbrufenSortiertAlphabetisch() {
+        Rezept rezept = rezeptErstellen("Kartoffelsuppe");
+        Zutat kartoffeln = zutatErstellen("Kartoffeln");
+        Zutat milch = zutatErstellen("Milch");
+        Zutat zwiebeln = zutatErstellen("Zwiebeln");
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), kartoffeln.getId(), 500.0, "g"));
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), milch.getId(), 200.0, "ml"));
+        rezeptZutatDAO.einfuegen(new RezeptZutat(rezept.getId(), zwiebeln.getId(), 2.0, "Stück"));
+        List<String> einheiten = rezeptZutatDAO.alleEinheitenAbrufen();
+        assertEquals(Arrays.asList("g", "ml", "Stück"), einheiten);
+    }
+
+    // Ohne gespeicherte Rezept-Zutat-Zuordnungen wird eine leere Liste zurückgegeben
+    @Test
+    public void alleEinheitenAbrufenOhneEintraege() {
+        List<String> einheiten = rezeptZutatDAO.alleEinheitenAbrufen();
+        assertNotNull(einheiten);
+        assertTrue(einheiten.isEmpty());
     }
 }
