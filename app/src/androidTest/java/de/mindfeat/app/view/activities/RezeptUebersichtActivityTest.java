@@ -1,10 +1,12 @@
 package de.mindfeat.app.view.activities;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.os.SystemClock;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -16,6 +18,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import de.mindfeat.app.MainActivity;
 import de.mindfeat.app.R;
 import de.mindfeat.app.model.datengrundlage.TestDatenbank;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 
 import org.junit.After;
 import org.junit.Before;
@@ -103,6 +106,32 @@ public class RezeptUebersichtActivityTest {
                 button.performClick();
                 assertTrue(activity.isFinishing());
             });
+        }
+    }
+
+    // Prüft, ob die Rezeptliste anhand des Suchbegriffs gefiltert wird
+    @Test
+    public void rezeptsucheFiltertDieAngezeigtenRezepte() {
+        testDatenbank.getDatenbank().rezeptDAO().einfuegen(new Rezept("Kartoffelsuppe", null, 2));
+        testDatenbank.getDatenbank().rezeptDAO().einfuegen(new Rezept("Tomatensuppe", null, 2));
+        try (ActivityScenario<RezeptUebersichtActivity> scenario = ActivityScenario.launch(RezeptUebersichtActivity.class)) {
+            scenario.onActivity(activity -> {
+                EditText suchfeld = activity.findViewById(R.id.etRezeptSuche);
+                suchfeld.setText("Kartoffel");
+            });
+            int[] anzahlRezepte = {0};
+            long zeitlimit = System.currentTimeMillis() + 5000;
+            while (System.currentTimeMillis() < zeitlimit) {
+                scenario.onActivity(activity -> {
+                    RecyclerView liste = activity.findViewById(R.id.rvRezepte);
+                    anzahlRezepte[0] = liste.getAdapter().getItemCount();
+                });
+                if (anzahlRezepte[0] == 1) {
+                    break;
+                }
+                SystemClock.sleep(50);
+            }
+            assertEquals("Die Rezeptliste wurde nicht korrekt gefiltert.", 1, anzahlRezepte[0]);
         }
     }
 }

@@ -2,24 +2,30 @@ package de.mindfeat.app.view.activities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
+import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import de.mindfeat.app.R;
 import de.mindfeat.app.model.datengrundlage.TestDatenbank;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class RezeptErstellenActivityTest {
@@ -156,8 +162,44 @@ public class RezeptErstellenActivityTest {
             titel.setText("Testrezept");
             portionen.setText("2");
             speichern.performClick();
-            assertTrue(titel.getError() == null);
-            assertTrue(portionen.getError() == null);
+            assertNull(titel.getError());
+            assertNull(portionen.getError());
         });
+    }
+
+    // Hilfsmethode: Ein Eingabefeld aus einer dynamisch erzeugten Zutatenzeile abrufen
+    private EditText zutatenEingabefeld(LinearLayout zeile, int position) {
+        ViewGroup container = (ViewGroup) zeile.getChildAt(position);
+        return (EditText) container.getChildAt(0);
+    }
+
+    // Prüft, ob ein vollständig ausgefülltes Rezept erfolgreich gespeichert wird
+    @Test
+    public void vollstaendigesRezeptWirdErfolgreichGespeichert() {
+        scenario.onActivity(activity -> {
+            EditText titel = activity.findViewById(R.id.etRezeptTitel);
+            EditText portionen = activity.findViewById(R.id.etRezeptPortionen);
+            titel.setText("Gemuesesuppe");
+            portionen.setText("2");
+            LinearLayout layoutZutaten = activity.findViewById(R.id.layoutZutaten);
+            LinearLayout zutatenZeile = (LinearLayout) layoutZutaten.getChildAt(0);
+            EditText menge = zutatenEingabefeld(zutatenZeile, 0);
+            EditText einheit = zutatenEingabefeld(zutatenZeile, 1);
+            EditText zutat = zutatenEingabefeld(zutatenZeile, 2);
+            menge.setText("2");
+            einheit.setText("EL");
+            zutat.setText("Karotten");
+            Button speichern = activity.findViewById(R.id.btnRezeptSpeichern);
+            speichern.performClick();
+        });
+        long zeitlimit = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < zeitlimit && scenario.getState() != Lifecycle.State.DESTROYED) {
+            SystemClock.sleep(50);
+        }
+        assertEquals("Die Activity wurde nach dem Speichern nicht beendet.", Lifecycle.State.DESTROYED, scenario.getState());
+        List<Rezept> gespeicherteRezepte = testDatenbank.getDatenbank().rezeptDAO().alleAbrufen();
+        assertEquals(1, gespeicherteRezepte.size());
+        assertEquals("Gemuesesuppe", gespeicherteRezepte.get(0).getTitel());
+        assertEquals(2, gespeicherteRezepte.get(0).getPortionen());
     }
 }
