@@ -54,4 +54,11 @@
     <string name="rezept_fehler_speichern">Das Rezept konnte nicht gespeichert werden.</string>
     <string name="rezept_erfolgreich_gespeichert">Dein Rezept wurde gespeichert.</string>
 
+
+    <string name="rezept_detail_portionen">Für %1$d Portionen</string>
+    <string name="rezept_detail_schrittnummer">%1$d. %2$s</string>
+    <string name="rezept_detail_keine_zutaten">Für dieses Rezept sind keine Zutaten hinterlegt.</string>
+    <string name="rezept_detail_keine_schritte">Für dieses Rezept sind keine Arbeitsschritte hinterlegt.</string>
+    <string name="rezept_fehler_nicht_gefunden">Das ausgewählte Rezept wurde nicht gefunden.</string>
+    <string name="rezept_fehler_laden">Das Rezept konnte nicht geladen werden.</string>
 </resources>

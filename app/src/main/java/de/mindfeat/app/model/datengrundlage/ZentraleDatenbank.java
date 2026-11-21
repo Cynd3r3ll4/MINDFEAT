@@ -72,4 +72,23 @@ public abstract class ZentraleDatenbank extends RoomDatabase {
         }
         return instanz;
     }
+
+    // Eine In-Memory-Datenbank für Instrumentierungstests einsetzen
+    public static void setInstanceForTesting(ZentraleDatenbank testInstanz) {
+        if (testInstanz == null) {
+            throw new IllegalArgumentException("Die Testdatenbank darf nicht null sein.");
+        }
+        synchronized (ZentraleDatenbank.class) {
+            instanz = testInstanz;
+        }
+    }
+
+    // Die Testinstanz nach dem Test wieder freigeben
+    public static void clearInstanceForTesting(ZentraleDatenbank testInstanz) {
+        synchronized (ZentraleDatenbank.class) {
+            if (instanz == testInstanz) {
+                instanz = null;
+            }
+        }
+    }
 }

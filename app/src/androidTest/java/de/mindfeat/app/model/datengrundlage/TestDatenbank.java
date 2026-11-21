@@ -7,9 +7,11 @@ import androidx.test.core.app.ApplicationProvider;
 
 public class TestDatenbank {
     private final ZentraleDatenbank datenbank;
+
     public TestDatenbank() {
         Context context = ApplicationProvider.getApplicationContext();
         datenbank = Room.inMemoryDatabaseBuilder(context, ZentraleDatenbank.class).allowMainThreadQueries().build();
+        ZentraleDatenbank.setInstanceForTesting(datenbank);
     }
 
     public ZentraleDatenbank getDatenbank() {
@@ -17,6 +19,10 @@ public class TestDatenbank {
     }
 
     public void schliessen() {
-        datenbank.close();
+        try {
+            ZentraleDatenbank.clearInstanceForTesting(datenbank);
+        } finally {
+            datenbank.close();
+        }
     }
 }

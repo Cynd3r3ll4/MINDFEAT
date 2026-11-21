@@ -14,6 +14,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import de.mindfeat.app.R;
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,9 +25,11 @@ import org.junit.runner.RunWith;
 public class RezeptErstellenActivityTest {
 
     private ActivityScenario<RezeptErstellenActivity> scenario;
+    private TestDatenbank testDatenbank;
 
     @Before
     public void setUp() {
+        testDatenbank = new TestDatenbank();
         scenario = ActivityScenario.launch(RezeptErstellenActivity.class);
     }
 
@@ -34,6 +37,9 @@ public class RezeptErstellenActivityTest {
     public void tearDown() {
         if (scenario != null) {
             scenario.close();
+        }
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
         }
     }
 

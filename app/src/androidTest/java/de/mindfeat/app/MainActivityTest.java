@@ -9,16 +9,33 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.view.activities.EinkaufslisteActivity;
 import de.mindfeat.app.view.activities.EssensplanUebersichtActivity;
 import de.mindfeat.app.view.activities.RezeptUebersichtActivity;
 import de.mindfeat.app.view.activities.StatistikActivity;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
+
+    private TestDatenbank testDatenbank;
+
+    @Before
+    public void setUp() {
+        testDatenbank = new TestDatenbank();
+    }
+
+    @After
+    public void tearDown() {
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
+    }
 
     // Prüft, ob die Startseite korrekt angezeigt wird
     @Test

@@ -47,8 +47,7 @@
     </style>
 
     <!-- Seitenüberschriften: Rezepte, Essensplan usw. -->
-    <style name="TextAppearance.Mindfeat.SeitenTitel"
-        parent="android:TextAppearance">
+    <style name="TextAppearance.Mindfeat.SeitenTitel" parent="android:TextAppearance">
         <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
         <item name="android:textSize">30sp</item>
         <item name="android:textStyle">bold</item>
@@ -66,6 +65,13 @@
     <style name="TextAppearance.Mindfeat.Label" parent="TextAppearance.Mindfeat">
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Labels serif (Beschriftungen über Eingabefeldern) -->
+    <style name="TextAppearance.Mindfeat.LabelSerif" parent="TextAppearance.Mindfeat">
+        <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <!-- Eingabefeld: äußere Fläche mit leichtem Schatten -->
@@ -104,5 +110,23 @@
         <item name="android:tint">?attr/colorOnPrimary</item>
         <item name="android:elevation">2dp</item>
     </style>
+
+
+    <!-- Textdarstellung für Zutaten und Zubereitungsschritte -->
+    <style name="TextAppearance.Mindfeat.DetailText">
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Nummerierung der Zubereitungsschritte -->
+    <style name="TextAppearance.Mindfeat.DetailNummer">
+        <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorSurface</item>
+    </style>
+
 
 </resources>

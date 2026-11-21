@@ -56,6 +56,11 @@ public class RezeptUebersichtActivity extends AppCompatActivity {
     private void listeEinrichten() {
         rvRezepte.setLayoutManager(new LinearLayoutManager(this));
         rezeptAdapter = new RezeptAdapter();
+        rezeptAdapter.setOnRezeptClickListener(rezeptId -> {
+            Intent intent = new Intent(RezeptUebersichtActivity.this, RezeptDetailActivity.class);
+            intent.putExtra(RezeptDetailActivity.EXTRA_REZEPT_ID, rezeptId);
+            startActivity(intent);
+        });
         rvRezepte.setAdapter(rezeptAdapter);
         rvRezepte.setHasFixedSize(false);
     }

@@ -15,12 +15,29 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import de.mindfeat.app.MainActivity;
 import de.mindfeat.app.R;
+import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class RezeptUebersichtActivityTest {
+
+    private TestDatenbank testDatenbank;
+
+    @Before
+    public void setUp() {
+        testDatenbank = new TestDatenbank();
+    }
+
+    @After
+    public void tearDown() {
+        if (testDatenbank != null) {
+            testDatenbank.schliessen();
+        }
+    }
 
     // Prüft, ob die Rezeptübersicht korrekt gestartet wird
     @Test

@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RezeptAdapter extends RecyclerView.Adapter<RezeptAdapter.RezeptViewHolder> {
-
     private final List<Rezept> rezepte = new ArrayList<>();
 
     // Bilder im Hintergrund laden
@@ -31,6 +30,17 @@ public class RezeptAdapter extends RecyclerView.Adapter<RezeptAdapter.RezeptView
 
     // Ergebnisse auf dem UI-Thread anzeigen
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    // Listener für die Auswahl eines Rezepts
+    private OnRezeptClickListener rezeptClickListener;
+
+    public interface OnRezeptClickListener {
+        void onRezeptAngeklickt(int rezeptId);
+    }
+
+    public void setOnRezeptClickListener(OnRezeptClickListener listener) {
+        this.rezeptClickListener = listener;
+    }
 
     // Einzelnen Listeneintrag erzeugen
     @NonNull
@@ -45,6 +55,11 @@ public class RezeptAdapter extends RecyclerView.Adapter<RezeptAdapter.RezeptView
     public void onBindViewHolder(@NonNull RezeptViewHolder holder, int position) {
         Rezept rezept = rezepte.get(position);
         holder.tvRezeptTitel.setText(rezept.getTitel());
+        holder.itemView.setOnClickListener(v -> {
+            if (rezeptClickListener != null) {
+                rezeptClickListener.onRezeptAngeklickt(rezept.getId());
+            }
+        });
         holder.ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery);
         String bildPfad = rezept.getBildPfad();
         if (bildPfad == null || bildPfad.trim().isEmpty()) {
@@ -96,10 +111,8 @@ public class RezeptAdapter extends RecyclerView.Adapter<RezeptAdapter.RezeptView
 
     // ViewHolder hält die Ansichten eines Listeneintrags
     static class RezeptViewHolder extends RecyclerView.ViewHolder {
-
         private final ImageView ivRezeptBild;
         private final TextView tvRezeptTitel;
-
         RezeptViewHolder(@NonNull View itemView) {
             super(itemView);
             ivRezeptBild = itemView.findViewById(R.id.ivRezeptBild);
