@@ -2,7 +2,6 @@ package de.mindfeat.app.view.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +11,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,8 +33,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,7 +47,10 @@ import de.mindfeat.app.MainActivity;
 import de.mindfeat.app.R;
 import de.mindfeat.app.controller.RezeptController;
 import de.mindfeat.app.model.datengrundlage.ZentraleDatenbank;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Kategorie;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
+import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptZutat;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Zubereitungsschritt;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Zutat;
 import de.mindfeat.app.model.vermittler.RezeptVermittler;
 import de.mindfeat.app.view.helfer.BildHelfer;
@@ -53,6 +62,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private EditText etPortionen;
     private ImageView ivRezeptBild;
     private MaterialCardView cardRezeptVorschau;
+    private ImageButton btnRezeptBildEntfernen;
     private LinearLayout layoutZutaten;
     private LinearLayout layoutArbeitsschritte;
     private Button btnSpeichern;
@@ -64,11 +74,16 @@ public class RezeptErstellenActivity extends AppCompatActivity {
     private ExecutorService datenbankExecutor;
     private Uri kameraUri;
     private String bildPfad;
+    private String urspruenglicherBildPfad;
+    private final List<String> neuErstellteBildPfade = new ArrayList<>();
+    private boolean speichernErfolgreich = false;
     private ActivityResultLauncher<String> galerieLauncher;
     private ActivityResultLauncher<Uri> kameraLauncher;
     private final List<String> vorhandeneEinheiten = new ArrayList<>();
     private final List<String> vorhandeneZutaten = new ArrayList<>();
     private final ExecutorService bildVorschauExecutor = Executors.newSingleThreadExecutor();
+    private TextView tvFormularTitel;
+    private int bearbeitungsRezeptId = -1; //-1 bedeutet: neues Rezept anlegen, eine positive ID bedeutet: vorhandenes Rezept bearbeiten
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +98,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         eingabefelderEinrichten();
         klickaktionenEinrichten();
         fenstereinschuebeEinrichten();
+        bearbeitungsmodusInitialisieren();
     }
 
     private void ansichtenInitialisieren() {
@@ -92,12 +108,15 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         ivRezeptBild = findViewById(R.id.ivRezeptVorschau);
         cardRezeptVorschau = findViewById(R.id.cardRezeptVorschau);
         cardRezeptVorschau.setVisibility(View.GONE);
+        btnRezeptBildEntfernen = findViewById(R.id.btnRezeptBildEntfernen);
+        btnRezeptBildEntfernen.setVisibility(View.GONE);
         layoutZutaten = findViewById(R.id.layoutZutaten);
         layoutArbeitsschritte = findViewById(R.id.layoutArbeitsschritte);
         layoutZutaten.setClipChildren(false);
         layoutZutaten.setClipToPadding(false);
         layoutArbeitsschritte.setClipChildren(false);
         layoutArbeitsschritte.setClipToPadding(false);
+        tvFormularTitel = findViewById(R.id.tvRezeptFormularTitel);
         btnSpeichern = findViewById(R.id.btnRezeptSpeichern);
     }
 
@@ -106,6 +125,125 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         ZentraleDatenbank datenbank = ZentraleDatenbank.getInstance(getApplicationContext());
         RezeptVermittler vermittler = new RezeptVermittler(datenbank);
         rezeptController = new RezeptController(vermittler, datenbankExecutor, this::runOnUiThread);
+    }
+
+    // Prüft, ob ein vorhandenes Rezept bearbeitet werden soll, ohne gültige Rezept-ID bleibt die Activity im Erstellungsmodus
+    private void bearbeitungsmodusInitialisieren() {
+        bearbeitungsRezeptId = getIntent().getIntExtra(RezeptDetailActivity.EXTRA_REZEPT_ID, -1);
+        if (bearbeitungsRezeptId > 0) {
+            tvFormularTitel.setText(R.string.rezept_bearbeiten);
+            rezeptBearbeitungsdatenLaden();
+        } else {
+            tvFormularTitel.setText(R.string.rezept_erstellen);
+        }
+    }
+
+    // Lädt ein vorhandenes Rezept einschließlich Zutaten, Kategorien und Zubereitungsschritten über den Controller
+    private void rezeptBearbeitungsdatenLaden() {
+        rezeptController.nachIdMitDetailsAbrufen(bearbeitungsRezeptId, new RezeptController.Callback<>() {
+                    @Override
+                    public void beiErfolg(RezeptVermittler.RezeptDetails details) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        if (details == null || details.getRezept() == null) {
+                            Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_fehler_nicht_gefunden, Toast.LENGTH_LONG).show();
+                            finish();
+                            return;
+                        }
+                        formularMitRezeptdatenFuellen(details);
+                    }
+                    @Override
+                    public void beiFehler(Exception exception) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_fehler_laden, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+        );
+    }
+
+    // Überträgt die geladenen Rezeptdaten in die vorhandenen Formularfelder.
+    private void formularMitRezeptdatenFuellen(RezeptVermittler.RezeptDetails details) {
+        Rezept rezept = details.getRezept();
+        etTitel.setText(rezept.getTitel());
+        etPortionen.setText(String.valueOf(rezept.getPortionen()));
+        StringBuilder kategorienText = new StringBuilder();
+        for (Kategorie kategorie : details.getKategorien()) {
+            if (kategorienText.length() > 0) {
+                kategorienText.append(", ");
+            }
+            kategorienText.append(kategorie.getName());
+        }
+        etKategorien.setText(kategorienText.toString());
+        bildPfad = rezept.getBildPfad();
+        urspruenglicherBildPfad = bildPfad; // Ursprüngliches Bild merken, damit es erst nach erfolgreichem Speichern gelöscht werden kann
+        if (bildPfad != null && !bildPfad.trim().isEmpty()) {
+            rezeptBildVorschauLaden(bildPfad);
+        }
+        layoutZutaten.removeAllViews();
+        mengenFelder.clear();
+        einheitenFelder.clear();
+        zutatenFelder.clear();
+        layoutArbeitsschritte.removeAllViews();
+        schrittFelder.clear();
+        Map<Integer, Zutat> zutatenNachId = new HashMap<>();
+        for (Zutat zutat : details.getZutaten()) {
+            zutatenNachId.put(zutat.getId(), zutat);
+        }
+        DecimalFormat format = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(Locale.GERMANY));
+        for (RezeptZutat rezeptZutat : details.getRezeptZutaten()) {
+            Zutat zutat = zutatenNachId.get(rezeptZutat.getZutatId());
+            if (zutat == null) {
+                continue;
+            }
+            zutatHinzufuegen();
+            int index = mengenFelder.size() - 1;
+            mengenFelder.get(index).setText(format.format(rezeptZutat.getMenge()));
+            einheitenFelder.get(index).setText(rezeptZutat.getEinheit());
+            zutatenFelder.get(index).setText(zutat.getName());
+        }
+        if (mengenFelder.isEmpty()) {
+            zutatHinzufuegen();
+        }
+        for (Zubereitungsschritt schritt : details.getZubereitungsschritte()) {
+            schrittHinzufuegen();
+            int index = schrittFelder.size() - 1;
+            schrittFelder.get(index).setText(schritt.getBeschreibung());
+        }
+        if (schrittFelder.isEmpty()) {
+            schrittHinzufuegen();
+        }
+    }
+
+    // Lädt das bereits gespeicherte Rezeptbild asynchron in die Vorschau.
+    private void rezeptBildVorschauLaden(String pfad) {
+        cardRezeptVorschau.setVisibility(View.VISIBLE);
+        btnRezeptBildEntfernen.setVisibility(View.VISIBLE);
+        ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery);
+        bildVorschauExecutor.execute(() -> {
+            int zielBreite = getResources().getDisplayMetrics().widthPixels;
+            int zielHoehe = (int) (180 * getResources().getDisplayMetrics().density);
+            Bitmap bitmap = BildHelfer.skaliertLaden(pfad, zielBreite, zielHoehe);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                if (bitmap != null && pfad.equals(bildPfad)) {
+                    ivRezeptBild.setImageBitmap(bitmap);
+                }
+            });
+        });
+    }
+
+    // Entfernt das aktuell ausgewählte Rezeptbild aus dem Formular.
+    private void rezeptBildEntfernen() {
+        bildPfad = null;
+        ivRezeptBild.setImageDrawable(null);
+        cardRezeptVorschau.setVisibility(View.GONE);
+        btnRezeptBildEntfernen.setVisibility(View.GONE);
     }
 
     // Bereits verwendete Einheiten aus Room laden
@@ -181,7 +319,6 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         feld.setThreshold(1);
     }
 
-
     private void bildLauncherEinrichten() {
         galerieLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                     if (uri != null) {
@@ -206,6 +343,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         findViewById(R.id.btnRezeptAbbrechen).setOnClickListener(v -> finish());
         findViewById(R.id.btnBildGalerie).setOnClickListener(v -> galerieLauncher.launch("image/*"));
         findViewById(R.id.btnBildKamera).setOnClickListener(v -> kameraOeffnen());
+        btnRezeptBildEntfernen.setOnClickListener(v -> rezeptBildEntfernen());
         findViewById(R.id.btnZutatHinzufuegen).setOnClickListener(v -> zutatHinzufuegen());
         findViewById(R.id.btnArbeitsschrittHinzufuegen).setOnClickListener(v -> schrittHinzufuegen());
         findViewById(R.id.btnRezeptErstellenZurueck).setOnClickListener(v -> finish());
@@ -334,10 +472,12 @@ public class RezeptErstellenActivity extends AppCompatActivity {
             while ((anzahl = eingabe.read(puffer)) != -1) {
                 ausgabe.write(puffer, 0, anzahl);
             }
+            neuErstellteBildPfade.add(zielDatei.getAbsolutePath());
             bildPfad = zielDatei.getAbsolutePath();
             ivRezeptBild.setImageResource(android.R.drawable.ic_menu_gallery);
             ivRezeptBild.setVisibility(View.VISIBLE);
             cardRezeptVorschau.setVisibility(View.VISIBLE);
+            btnRezeptBildEntfernen.setVisibility(View.VISIBLE);
             String aktuellerBildPfad = bildPfad;
             bildVorschauExecutor.execute(() -> {
                 int zielBreite = getResources().getDisplayMetrics().widthPixels;
@@ -363,7 +503,7 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         }
     }
 
-    // Alle Eingaben prüfen und an den Controller übergeben
+    // Alle Eingaben prüfen und an den Controller übergeben (inkl. Prüfung ob AKtualisierung oder Neu)
     private void rezeptSpeichern() {
         String titel = etTitel.getText().toString().trim();
         if (titel.isEmpty()) {
@@ -399,32 +539,90 @@ public class RezeptErstellenActivity extends AppCompatActivity {
         Rezept rezept;
         try {
             rezept = new Rezept(titel, bildPfad, portionen);
+            if (bearbeitungsRezeptId > 0) {
+                rezept.setId(bearbeitungsRezeptId);
+            }
         } catch (IllegalArgumentException exception) {
             Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
             return;
         }
         btnSpeichern.setEnabled(false);
-        rezeptController.anlegen(rezept, zutaten, kategorien, schritte, new RezeptController.Callback<>() {
-                    @Override
-                    public void beiErfolg(Integer rezeptId) {
-                        if (isFinishing() || isDestroyed()) {
-                            return;
+        if (bearbeitungsRezeptId > 0) { // Vorhandenes Rezept aktualisieren
+            rezeptController.bearbeiten(rezept, zutaten, kategorien, schritte, new RezeptController.Callback<>() {
+                        @Override
+                        public void beiErfolg(Void ergebnis) {
+                            if (isFinishing() || isDestroyed()) {
+                                return;
+                            }
+                            nachErfolgreichemSpeichern();
+                            Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_erfolgreich_gespeichert, Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finish();
                         }
-                        Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_erfolgreich_gespeichert, Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
 
-            @Override
-                    public void beiFehler(Exception exception) {
-                        if (isFinishing() || isDestroyed()) {
-                            return;
+                        @Override
+                        public void beiFehler(Exception exception) {
+                            rezeptSpeichernFehlgeschlagen(exception);
                         }
-                        btnSpeichern.setEnabled(true);
-                        Toast.makeText(RezeptErstellenActivity.this, getString(R.string.rezept_fehler_speichern) + " " + exception.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                }
-        );
+            );
+        } else { // Neues Rezept anlegen
+            rezeptController.anlegen(
+                    rezept,
+                    zutaten,
+                    kategorien,
+                    schritte,
+                    new RezeptController.Callback<>() {
+                        @Override
+                        public void beiErfolg(Integer rezeptId) {
+                            if (isFinishing() || isDestroyed()) {
+                                return;
+                            }
+                            nachErfolgreichemSpeichern();
+                            Toast.makeText(RezeptErstellenActivity.this, R.string.rezept_erfolgreich_gespeichert, Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+
+                        @Override
+                        public void beiFehler(Exception exception) {
+                            rezeptSpeichernFehlgeschlagen(exception);
+                        }
+                    }
+            );
+        }
+    }
+
+    // Räumt nach erfolgreichem Speichern alle nicht mehr benötigten Bilddateien auf
+    private void nachErfolgreichemSpeichern() {
+        speichernErfolgreich = true;
+        for (String pfad : neuErstellteBildPfade) {
+            if (!pfad.equals(bildPfad)) {
+                new File(pfad).delete();
+            }
+        }
+        if (urspruenglicherBildPfad != null
+                && !urspruenglicherBildPfad.equals(bildPfad)) {
+            new File(urspruenglicherBildPfad).delete();
+        }
+        neuErstellteBildPfade.clear();
+    }
+
+    // Löscht alle während dieser Activity neu angelegten Bilder, wenn die Bearbeitung ohne erfolgreiches Speichern beendet wird
+    private void neuErstellteBilddateienLoeschen() {
+        for (String pfad : neuErstellteBildPfade) {
+            new File(pfad).delete();
+        }
+        neuErstellteBildPfade.clear();
+    }
+
+    // Aktiviert den Speichern-Button nach einem fehlgeschlagenen Speichervorgang erneut und zeigt die Fehlermeldung an
+    private void rezeptSpeichernFehlgeschlagen(Exception exception) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        btnSpeichern.setEnabled(true);
+        Toast.makeText(RezeptErstellenActivity.this, getString(R.string.rezept_fehler_speichern) + " " + exception.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     private List<RezeptVermittler.ZutatAngabe> zutatenZusammenstellen() {
@@ -488,6 +686,9 @@ public class RezeptErstellenActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (isFinishing() && !speichernErfolgreich) {
+            neuErstellteBilddateienLoeschen();
+        }
         if (datenbankExecutor != null) {
             datenbankExecutor.shutdown();
         }

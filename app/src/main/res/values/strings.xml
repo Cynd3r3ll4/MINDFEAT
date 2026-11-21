@@ -20,11 +20,14 @@
     <string name="alternativtext_rezept_startseite">zur Startseite</string>
     <string name="alternativtext_rezept_bild">Rezeptbild</string>
 
+    <string name="rezept_bearbeiten">Rezept bearbeiten</string>
+
     <string name="rezept_erstellen">Rezept erstellen</string>
     <string name="rezept_titel">Titel</string>
     <string name="rezept_name">Name des Rezepts</string>
     <string name="rezept_kategorie_beispiel">z. B. herzhaft, Herbst/Winter</string>
     <string name="rezept_bild">Bild</string>
+    <string name="alternativtext_bild_entfernen">Rezeptbild entfernen</string>
     <string name="rezept_galerie">Galerie</string>
     <string name="rezept_kamera">Kamera</string>
 
@@ -61,4 +64,17 @@
     <string name="rezept_detail_keine_schritte">Für dieses Rezept sind keine Arbeitsschritte hinterlegt.</string>
     <string name="rezept_fehler_nicht_gefunden">Das ausgewählte Rezept wurde nicht gefunden.</string>
     <string name="rezept_fehler_laden">Das Rezept konnte nicht geladen werden.</string>
+
+    <string name="alternativtext_rezept_aktion">Rezeptaktionen</string>
+    <string name="rezept_aktion_bearbeiten">Bearbeiten</string>
+    <string name="rezept_aktion_loeschen">Löschen</string>
+
+    <string name="rezept_loeschen_titel">Rezept löschen?</string>
+    <string name="rezept_loeschen_bestaetigung">Möchtest du dieses Rezept wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>
+    <string name="rezept_loeschen">Löschen</string>
+
+    <string name="rezept_erfolgreich_geloescht">Das Rezept wurde gelöscht.</string>
+    <string name="rezept_fehler_loeschen">Das Rezept konnte nicht gelöscht werden.</string>
+    <string name="rezept_bild_fehler_loeschen">Das Rezept wurde gelöscht, aber die zugehörige Bilddatei konnte nicht entfernt werden.</string>
+
 </resources>

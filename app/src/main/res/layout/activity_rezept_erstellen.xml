@@ -53,6 +53,7 @@
 
     <!-- Seitenüberschrift wie in der Rezeptübersicht -->
     <TextView
+        android:id="@+id/tvRezeptFormularTitel"
         style="@style/TextAppearance.Mindfeat.SeitenTitel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,6 +73,7 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
+        <!-- Rezepttitel -->
         <TextView
             style="@style/TextAppearance.Mindfeat.Label"
             android:layout_width="match_parent"
@@ -96,6 +98,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Kategorien -->
         <TextView
             style="@style/TextAppearance.Mindfeat.Label"
             android:layout_width="match_parent"
@@ -120,6 +123,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Bildvorschau -->
         <TextView
             style="@style/TextAppearance.Mindfeat.Label"
             android:layout_width="match_parent"
@@ -147,6 +151,18 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <ImageButton
+            android:id="@+id/btnRezeptBildEntfernen"
+            style="@style/Widget.Mindfeat.AktionsIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/alternativtext_bild_entfernen"
+            android:src="@drawable/ic_loeschen"
+            android:visibility="gone" />
+
+        <!-- Bildauswahl -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

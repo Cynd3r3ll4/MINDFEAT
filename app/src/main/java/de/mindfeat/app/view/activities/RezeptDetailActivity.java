@@ -7,13 +7,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,7 +27,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
@@ -45,8 +52,7 @@ import de.mindfeat.app.view.helfer.BildHelfer;
 
 public class RezeptDetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_REZEPT_ID =
-            "de.mindfeat.app.EXTRA_REZEPT_ID";
+    public static final String EXTRA_REZEPT_ID = "de.mindfeat.app.EXTRA_REZEPT_ID";
     private TextView tvRezeptTitel;
     private ImageView ivRezeptBild;
     private ChipGroup cgRezeptKategorien;
@@ -55,16 +61,30 @@ public class RezeptDetailActivity extends AppCompatActivity {
     private LinearLayout llRezeptZubereitung;
     private RezeptController rezeptController;
     private ExecutorService datenbankExecutor;
+    private PopupWindow rezeptAktionsPopup;
+    private ActivityResultLauncher<Intent> bearbeitenLauncher;
+    private String aktuellerBildPfad;
+    private boolean rezeptDetailsGeladen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bearbeitenLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), ergebnis -> {
+                    if (ergebnis.getResultCode() == RESULT_OK) {rezeptLaden();}});
         setContentView(R.layout.activity_rezept_detail);
         ansichtenInitialisieren();
         navigationEinrichten();
         fenstereinschuebeEinrichten();
         controllerEinrichten();
         rezeptLaden();
+        ImageButton btnRezeptAktionen = findViewById(R.id.btnRezeptAktionen);
+        btnRezeptAktionen.setOnClickListener(v -> {
+            if (rezeptAktionsPopup != null && rezeptAktionsPopup.isShowing()) {
+                rezeptAktionsPopup.dismiss();
+            } else {
+                zeigeRezeptAktionsmenue(btnRezeptAktionen);
+            }
+        });
     }
 
     private void ansichtenInitialisieren() {
@@ -130,7 +150,9 @@ public class RezeptDetailActivity extends AppCompatActivity {
         Rezept rezept = details.getRezept();
         tvRezeptTitel.setText(rezept.getTitel());
         tvRezeptPortionen.setText(getString(R.string.rezept_detail_portionen, rezept.getPortionen()));
-        rezeptBildLaden(rezept.getBildPfad());
+        aktuellerBildPfad = rezept.getBildPfad();
+        rezeptBildLaden(aktuellerBildPfad);
+        rezeptDetailsGeladen = true;
         cgRezeptKategorien.removeAllViews();
         for (Kategorie kategorie : details.getKategorien()) {
             Chip chip = new Chip(this);
@@ -269,5 +291,106 @@ public class RezeptDetailActivity extends AppCompatActivity {
             datenbankExecutor.shutdown();
         }
         super.onDestroy();
+    }
+
+    private void zeigeRezeptAktionsmenue(View anker) {
+        View popupView = LayoutInflater.from(this).inflate(R.layout.popup_rezept_aktionen, null, false);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.setBackgroundDrawable(getDrawable(R.drawable.bg_popup_rezept_aktionen));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setTouchable(true);
+        float dichte = getResources().getDisplayMetrics().density;
+        popupWindow.setElevation(8 * dichte);
+        popupWindow.setOnDismissListener(() -> rezeptAktionsPopup = null);
+        View bearbeiten = popupView.findViewById(R.id.zeileBearbeiten);
+        bearbeiten.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            int rezeptId = getIntent().getIntExtra(EXTRA_REZEPT_ID, -1);
+            if (rezeptId < 1) {
+                Toast.makeText(this, R.string.rezept_fehler_nicht_gefunden, Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent intent = new Intent(RezeptDetailActivity.this, RezeptErstellenActivity.class);
+            intent.putExtra(EXTRA_REZEPT_ID, rezeptId);
+            bearbeitenLauncher.launch(intent);
+        });
+        View loeschen = popupView.findViewById(R.id.zeileLoeschen);
+        loeschen.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            loescheRezept();
+        });
+        rezeptAktionsPopup = popupWindow;
+        popupWindow.showAsDropDown(anker, 0, 0, Gravity.END);
+    }
+
+    // Rezept löschen
+    private void loescheRezept() {
+        if (!rezeptDetailsGeladen) {
+            Toast.makeText(this, R.string.rezept_fehler_laden, Toast.LENGTH_LONG).show();
+            return;
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.rezept_loeschen_titel)
+                .setMessage(R.string.rezept_loeschen_bestaetigung)
+                .setNegativeButton(R.string.abbrechen, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(R.string.rezept_loeschen, (dialog, which) -> rezeptLoeschenAusfuehren()).show();
+    }
+
+    private void rezeptLoeschenAusfuehren() {
+        int rezeptId = getIntent().getIntExtra(EXTRA_REZEPT_ID, -1);
+        if (rezeptId < 1) {
+            Toast.makeText(this, R.string.rezept_fehler_nicht_gefunden, Toast.LENGTH_LONG).show();
+            return;
+        }
+        rezeptController.loeschen(rezeptId, new RezeptController.Callback<>() {
+                    @Override
+                    public void beiErfolg(Boolean erfolgreich) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        if (!Boolean.TRUE.equals(erfolgreich)) {
+                            Toast.makeText(RezeptDetailActivity.this, R.string.rezept_fehler_loeschen, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        boolean bildEntfernt = rezeptBildEntfernen();
+                        if (bildEntfernt) {
+                            Toast.makeText(RezeptDetailActivity.this, R.string.rezept_erfolgreich_geloescht, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(RezeptDetailActivity.this, R.string.rezept_bild_fehler_loeschen, Toast.LENGTH_LONG).show();
+                        }
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+
+            @Override
+                    public void beiFehler(Exception exception) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        Toast.makeText(RezeptDetailActivity.this, R.string.rezept_fehler_loeschen, Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+    }
+
+    private boolean rezeptBildEntfernen() {
+        if (aktuellerBildPfad == null || aktuellerBildPfad.trim().isEmpty()) {
+            return true;
+        }
+        try {
+            File bildDatei = new File(aktuellerBildPfad);
+            File rezeptBildOrdner = new File(getFilesDir(), "rezept_bilder");
+            File kanonischerBildOrdner = rezeptBildOrdner.getCanonicalFile();
+            File kanonischeBildDatei = bildDatei.getCanonicalFile();
+            if (!kanonischerBildOrdner.equals(kanonischeBildDatei.getParentFile())) {
+                return false;
+            }
+            if (!kanonischeBildDatei.exists()) {
+                return true;
+            }
+            return kanonischeBildDatei.isFile() && kanonischeBildDatei.delete();
+        } catch (java.io.IOException exception) {
+            return false;
+        }
     }
 }

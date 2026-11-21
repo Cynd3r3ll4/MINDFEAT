@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_popup_rezept_aktionen"
+    android:paddingVertical="4dp">
+
+    <!-- Menüpunkt: Bearbeiten -->
+    <LinearLayout
+        android:id="@+id/zeileBearbeiten"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_bearbeiten"
+            app:tint="?attr/colorOnPrimary"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/rezept_aktion_bearbeiten"
+            style="@style/TextAppearance.Mindfeat.Label"
+            android:textColor="?attr/colorSurface" />
+
+    </LinearLayout>
+
+    <!-- Menüpunkt: Löschen -->
+    <LinearLayout
+        android:id="@+id/zeileLoeschen"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_loeschen"
+            app:tint="?attr/colorOnPrimary"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/rezept_aktion_loeschen"
+            style="@style/TextAppearance.Mindfeat.Label"
+            android:textColor="?attr/colorSurface" />
+
+    </LinearLayout>
+
+</LinearLayout>
