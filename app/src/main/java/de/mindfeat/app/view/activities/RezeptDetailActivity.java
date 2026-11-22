@@ -24,10 +24,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -329,11 +329,15 @@ public class RezeptDetailActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.rezept_fehler_laden, Toast.LENGTH_LONG).show();
             return;
         }
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.rezept_loeschen_titel)
-                .setMessage(R.string.rezept_loeschen_bestaetigung)
-                .setNegativeButton(R.string.abbrechen, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(R.string.rezept_loeschen, (dialog, which) -> rezeptLoeschenAusfuehren()).show();
+        View loeschDialog = findViewById(R.id.layoutLoeschDialog);
+        loeschDialog.setVisibility(View.VISIBLE);
+        MaterialButton btnAbbrechen = loeschDialog.findViewById(R.id.btnAbbrechen);
+        MaterialButton btnLoeschen = loeschDialog.findViewById(R.id.btnLoeschen);
+        btnAbbrechen.setOnClickListener(v -> loeschDialog.setVisibility(View.GONE));
+        btnLoeschen.setOnClickListener(v -> {
+            loeschDialog.setVisibility(View.GONE);
+            rezeptLoeschenAusfuehren();
+        });
     }
 
     private void rezeptLoeschenAusfuehren() {

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="mindfeat_brown">#9A4B22</color>
+    <color name="mindfeat_dialog_overlay">#DC9A4B22</color>
     <color name="mindfeat_beige">#EFE7DD</color>
+    <color name="mindfeat_red">#BD4739</color>
+    <color name="mindfeat_green">#78866A</color>
 </resources>

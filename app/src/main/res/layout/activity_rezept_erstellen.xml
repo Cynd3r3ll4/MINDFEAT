@@ -288,7 +288,7 @@
 
             <Button
                 android:id="@+id/btnRezeptAbbrechen"
-                style="@style/Widget.Mindfeat.Button"
+                style="@style/Widget.Mindfeat.Button.Red"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -299,7 +299,7 @@
 
             <Button
                 android:id="@+id/btnRezeptSpeichern"
-                style="@style/Widget.Mindfeat.Button"
+                style="@style/Widget.Mindfeat.Button.Green"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

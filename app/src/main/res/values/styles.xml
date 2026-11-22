@@ -61,6 +61,33 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Buttons (braun) -->
+    <style name="Widget.Mindfeat.Button.Brown" parent="Widget.Material3.Button">
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="backgroundTint">@color/mindfeat_brown</item>
+        <item name="android:textColor">@color/mindfeat_beige</item>
+    </style>
+
+    <!-- Buttons (rot) -->
+    <style name="Widget.Mindfeat.Button.Red" parent="Widget.Material3.Button">
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="backgroundTint">@color/mindfeat_red</item>
+        <item name="android:textColor">@color/mindfeat_beige</item>
+    </style>
+
+    <!-- Buttons (grün) -->
+    <style name="Widget.Mindfeat.Button.Green" parent="Widget.Material3.Button">
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="backgroundTint">@color/mindfeat_green</item>
+        <item name="android:textColor">@color/mindfeat_beige</item>
+    </style>
+
     <!-- Labels (Beschriftungen über Eingabefeldern) -->
     <style name="TextAppearance.Mindfeat.Label" parent="TextAppearance.Mindfeat">
         <item name="android:textSize">22sp</item>
