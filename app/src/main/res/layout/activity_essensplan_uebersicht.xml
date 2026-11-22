@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/essensplanUebersicht"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    tools:context=".view.activities.EssensplanUebersichtActivity">
+
+    <!-- Kopfzeile -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/tvAppTitel"
+            style="@style/TextAppearance.Mindfeat.AppTitel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:gravity="bottom|center"
+            android:text="@string/app_name" />
+
+        <ImageButton
+            android:id="@+id/btnEssensplanStartseite"
+            style="@style/Widget.Mindfeat.NavigationIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:contentDescription="@string/alternativtext_rezept_startseite"
+            android:src="@drawable/ic_home" />
+
+        <ImageButton
+            android:id="@+id/btnEssensplanUebersichtZurueck"
+            style="@style/Widget.Mindfeat.NavigationIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/alternativtext_zurueck"
+            android:src="@drawable/ic_zurueck" />
+
+    </FrameLayout>
+
+    <!-- Seitenüberschrift -->
+    <TextView
+        android:id="@+id/tvEssensplanUeberschrift"
+        style="@style/TextAppearance.Mindfeat.SeitenTitel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/essensplan" />
+
+    <!-- Suchbereich: bleibt außerhalb des Scrollbereichs -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvEssensplanSuche"
+            style="@style/TextAppearance.Mindfeat.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:text="@string/essensplan_suche" />
+
+        <!-- Eingabefeld und Plus-Button in einer Zeile -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Mindfeat.FeldContainer"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp">
+
+                <EditText
+                    android:id="@+id/etEssensplanSuche"
+                    style="@style/Widget.Mindfeat.FeldEingabe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/essensplan_suche_platzhalter"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:gravity="center_vertical" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <ImageButton
+                android:id="@+id/btnEssensplanHinzufuegen"
+                style="@style/Widget.Mindfeat.AktionsIconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/alternativtext_essensplan_hinzufuegen"
+                android:src="@drawable/ic_plus" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Nur dieser Bereich scrollt -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvEssensplaene"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollbars="vertical" />
+
+</LinearLayout>

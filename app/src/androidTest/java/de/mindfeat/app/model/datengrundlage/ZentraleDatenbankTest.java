@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -95,7 +96,7 @@ public class ZentraleDatenbankTest {
         datenbank.zubereitungsschrittDAO().einfuegen(new Zubereitungsschritt(rezeptId, 2, "Zwiebeln im Topf anbraten."));
 
         // Essensplan anlegen und Rezept einem Datum zuordnen
-        Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         int essensplanId = (int) datenbank.essensplanDAO().einfuegen(essensplan);
         datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04", 2, 2));
 
@@ -141,7 +142,7 @@ public class ZentraleDatenbankTest {
         List<Einkaufslistenelement> einkaufsliste = datenbank.einkaufslistenelementDAO().nachZutatIdAbrufen(paprikaId);
         assertEquals(1, einkaufsliste.size());
         assertEquals(paprikaId, einkaufsliste.get(0).getZutatId());
-        assertEquals(false, einkaufsliste.get(0).isErledigt());
+        assertFalse(einkaufsliste.get(0).isErledigt());
     }
 
     // Fremdschlüssel und CASCADE-Löschregeln über die zentrale Datenbank prüfen
@@ -158,7 +159,7 @@ public class ZentraleDatenbankTest {
         int kategorieId = (int) datenbank.kategorieDAO().einfuegen(kategorie);
         datenbank.rezeptKategorieDAO().einfuegen(new RezeptKategorie(rezeptId, kategorieId));
         datenbank.zubereitungsschrittDAO().einfuegen(new Zubereitungsschritt(rezeptId, 1, "Nudeln kochen."));
-        Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         int essensplanId = (int) datenbank.essensplanDAO().einfuegen(essensplan);
         int planeintragId = (int) datenbank.inhaltEssensplanDAO().einfuegen(new InhaltEssensplan(essensplanId, rezeptId, "2026-11-04", 2, 2));
         int einkaufslistenId = (int) datenbank.einkaufslistenelementDAO().einfuegen(new Einkaufslistenelement(zutatId, 300.0, "g", false));

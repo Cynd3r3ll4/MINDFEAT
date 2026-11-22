@@ -57,7 +57,7 @@ public class EssensplanControllerTest {
 
     // Hilfsmethode: einen Essensplan über den Controller anlegen
     private int essensplanAnlegen() {
-        Essensplan essensplan = new Essensplan("Test-Essensplan", "2026-11-01", "2026-11-07", 6);
+        Essensplan essensplan = new Essensplan("2026-11-01", "2026-11-07", 6);
         ErgebnisCallback<Long> callback = new ErgebnisCallback<>();
         essensplanController.anlegen(essensplan, callback);
         assertNull(callback.fehler);
@@ -105,13 +105,13 @@ public class EssensplanControllerTest {
     public void essensplanBearbeiten() {
         int essensplanId = essensplanAnlegen();
         Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
-        essensplan.setTitel("Geänderter Essensplan");
+        essensplan.setWochenstartTag(2);
         ErgebnisCallback<Void> callback = new ErgebnisCallback<>();
         essensplanController.bearbeiten(essensplan, callback);
         assertNull(callback.fehler);
         Essensplan gespeicherterPlan = essensplanDAO.nachIdAbrufen(essensplanId);
         assertNotNull(gespeicherterPlan);
-        assertEquals("Geänderter Essensplan", gespeicherterPlan.getTitel());
+        assertEquals(2, gespeicherterPlan.getWochenstartTag());
     }
 
     // Ein Rezept zum Essensplan hinzufügen

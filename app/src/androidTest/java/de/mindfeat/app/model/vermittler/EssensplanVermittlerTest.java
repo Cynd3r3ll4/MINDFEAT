@@ -57,7 +57,7 @@ public class EssensplanVermittlerTest {
 
     // Hilfsmethode: einen Essensplan für Tests anlegen
     private int essensplanAnlegen() {
-        Essensplan essensplan = new Essensplan("Test-Essensplan", "2026-11-01", "2026-11-07", 6);
+        Essensplan essensplan = new Essensplan("2026-11-01", "2026-11-07", 6);
         return (int) essensplanVermittler.anlegen(essensplan);
     }
 
@@ -109,11 +109,11 @@ public class EssensplanVermittlerTest {
     public void essensplanBearbeiten() {
         int essensplanId = essensplanAnlegen();
         Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
-        essensplan.setTitel("Geänderter Essensplan");
+        essensplan.setWochenstartTag(2);
         essensplanVermittler.bearbeiten(essensplan);
         Essensplan gespeicherterPlan = essensplanDAO.nachIdAbrufen(essensplanId);
         assertNotNull(gespeicherterPlan);
-        assertEquals("Geänderter Essensplan", gespeicherterPlan.getTitel());
+        assertEquals(2, gespeicherterPlan.getWochenstartTag());
     }
 
     // Ein Plan-Zeitraum kann nicht geändert werden, wenn dabei bereits geplante Tage außerhalb des neuen Zeitraums liegen

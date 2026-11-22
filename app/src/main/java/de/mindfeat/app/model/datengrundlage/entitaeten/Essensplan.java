@@ -12,14 +12,12 @@ public class Essensplan {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String titel;
     private String startDatum;
     private String endDatum;
     private int wochenstartTag;
 
     // vollständiger Konstruktor für einen neuen Essensplan (mit Settern für darin enthaltene Validierungen)
-    public Essensplan(String titel, String startDatum, String endDatum, int wochenstartTag) {
-        setTitel(titel);
+    public Essensplan(String startDatum, String endDatum, int wochenstartTag) {
         setStartDatum(startDatum);
         setEndDatum(endDatum);
         setWochenstartTag(wochenstartTag);
@@ -34,19 +32,6 @@ public class Essensplan {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    // Optionaler Titel
-    public String getTitel() {
-        return titel;
-    }
-
-    public void setTitel(String titel) {
-        if (titel == null || titel.trim().isEmpty()) {
-            this.titel = null;
-        } else {
-            this.titel = titel.trim();
-        }
     }
 
     // Startdatum

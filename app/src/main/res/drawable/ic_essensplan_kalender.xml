@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Kalenderrahmen -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M5,4.5
+            H19
+            C19.83,4.5 20.5,5.17 20.5,6
+            V19
+            C20.5,19.83 19.83,20.5 19,20.5
+            H5
+            C4.17,20.5 3.5,19.83 3.5,19
+            V6
+            C3.5,5.17 4.17,4.5 5,4.5 Z" />
+
+    <!-- Kalenderaufhängung links -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M8,2.5 V6.5" />
+
+    <!-- Kalenderaufhängung rechts -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M16,2.5 V6.5" />
+
+    <!-- Trennlinie unter dem Kalenderkopf -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.5"
+        android:pathData="M3.5,9 H20.5" />
+
+    <!-- Kalenderfelder -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="
+            M7,11 H9 V13 H7 Z
+            M11,11 H13 V13 H11 Z
+            M15,11 H17 V13 H15 Z
+            M7,15 H9 V17 H7 Z
+            M11,15 H13 V17 H11 Z
+            M15,15 H17 V17 H15 Z" />
+
+</vector>

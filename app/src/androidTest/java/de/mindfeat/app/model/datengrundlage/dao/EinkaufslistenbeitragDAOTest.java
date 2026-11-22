@@ -54,7 +54,7 @@ public class EinkaufslistenbeitragDAOTest {
 
     // Einen Essensplan erstellen und seine ID zurückgeben
     private int essensplanErstellen() {
-        Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         return (int) essensplanDAO.einfuegen(essensplan);
     }
 

@@ -40,11 +40,10 @@ public class EssensplanDAOTest {
     // Einen neuen Essensplan einfügen und anhand seiner ID abrufen
     @Test
     public void einfuegenUndNachIdAbrufen() {
-        Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         long id = essensplanDAO.einfuegen(essensplan);
         Essensplan gespeichert = essensplanDAO.nachIdAbrufen((int) id);
         assertNotNull(gespeichert);
-        assertEquals("Wochenplan", gespeichert.getTitel());
         assertEquals("2026-11-02", gespeichert.getStartDatum());
         assertEquals("2026-11-08", gespeichert.getEndDatum());
         assertEquals(1, gespeichert.getWochenstartTag());
@@ -53,15 +52,14 @@ public class EssensplanDAOTest {
     // Einen vorhandenen Essensplan aktualisieren
     @Test
     public void aktualisieren() {
-        Essensplan essensplan = new Essensplan("Alter Plan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         long id = essensplanDAO.einfuegen(essensplan);
         essensplan.setId((int) id);
-        Essensplan aktualisiert = new Essensplan("Neuer Plan", "2026-11-09", "2026-11-15", 2);
+        Essensplan aktualisiert = new Essensplan("2026-11-09", "2026-11-15", 2);
         aktualisiert.setId((int) id);
         int anzahl = essensplanDAO.aktualisieren(aktualisiert);
         Essensplan gespeichert = essensplanDAO.nachIdAbrufen((int) id);
         assertEquals(1, anzahl);
-        assertEquals("Neuer Plan", gespeichert.getTitel());
         assertEquals("2026-11-09", gespeichert.getStartDatum());
         assertEquals("2026-11-15", gespeichert.getEndDatum());
         assertEquals(2, gespeichert.getWochenstartTag());
@@ -70,7 +68,7 @@ public class EssensplanDAOTest {
     // Einen vorhandenen Essensplan löschen
     @Test
     public void loeschen() {
-        Essensplan essensplan = new Essensplan("Wochenplan", "2026-11-02", "2026-11-08", 1);
+        Essensplan essensplan = new Essensplan("2026-11-02", "2026-11-08", 1);
         long id = essensplanDAO.einfuegen(essensplan);
         essensplan.setId((int) id);
         int anzahl = essensplanDAO.loeschen(essensplan);
@@ -81,14 +79,14 @@ public class EssensplanDAOTest {
     // Alle Essenspläne nach Startdatum aufsteigend abrufen
     @Test
     public void alleAbrufenSortiertNachStartdatum() {
-        Essensplan planSpaeter = new Essensplan("Späterer Plan", "2026-11-09", "2026-11-15", 1);
-        Essensplan planFrueher = new Essensplan("Früherer Plan", "2026-11-02", "2026-11-08", 1);
+        Essensplan planSpaeter = new Essensplan("2026-11-09", "2026-11-15", 1);
+        Essensplan planFrueher = new Essensplan("2026-11-02", "2026-11-08", 1);
         essensplanDAO.einfuegen(planSpaeter);
         essensplanDAO.einfuegen(planFrueher);
         List<Essensplan> plaene = essensplanDAO.alleAbrufen();
         assertEquals(2, plaene.size());
-        assertEquals("Früherer Plan", plaene.get(0).getTitel());
-        assertEquals("Späterer Plan", plaene.get(1).getTitel());
+        assertEquals("2026-11-02", plaene.get(0).getStartDatum());
+        assertEquals("2026-11-09", plaene.get(1).getStartDatum());
     }
 
     // Bei einer nicht vorhandenen ID null zurückgeben
@@ -96,15 +94,5 @@ public class EssensplanDAOTest {
     public void nachIdAbrufenNichtVorhanden() {
         Essensplan gespeichert = essensplanDAO.nachIdAbrufen(999);
         assertNull(gespeichert);
-    }
-
-    // Einen Essensplan ohne Titel speichern
-    @Test
-    public void einfuegenMitOptionalemTitel() {
-        Essensplan essensplan = new Essensplan(null, "2026-11-02", "2026-11-08", 1);
-        long id = essensplanDAO.einfuegen(essensplan);
-        Essensplan gespeichert = essensplanDAO.nachIdAbrufen((int) id);
-        assertNotNull(gespeichert);
-        assertNull(gespeichert.getTitel());
     }
 }

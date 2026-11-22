@@ -324,7 +324,7 @@ public class RezeptVermittlerTest {
                 Collections.emptyList(),
                 Collections.emptyList()
         );
-        Essensplan essensplan = new Essensplan("Testplan", "2026-01-01", "2026-01-07", 1);
+        Essensplan essensplan = new Essensplan("2026-01-01", "2026-01-07", 1);
         int essensplanId = (int) testDatenbank.getDatenbank().essensplanDAO().einfuegen(essensplan);
         InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, "2026-01-01", 2, 2);
         int inhaltId = (int) testDatenbank.getDatenbank().inhaltEssensplanDAO().einfuegen(inhalt);

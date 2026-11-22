@@ -77,4 +77,10 @@
     <string name="rezept_fehler_loeschen">Das Rezept konnte nicht gelöscht werden.</string>
     <string name="rezept_bild_fehler_loeschen">Das Rezept wurde gelöscht, aber die zugehörige Bilddatei konnte nicht entfernt werden.</string>
 
+    <string name="essensplan">Essensplan</string>
+    <string name="essensplan_suche">Suche</string>
+    <string name="essensplan_suche_platzhalter">Datum oder Zeitraum…</string>
+    <string name="alternativtext_essensplan_hinzufuegen">Essensplan hinzufügen</string>
+    <string name="alternativtext_essensplan_kalender">Kalendersymbol für den Essensplan</string>
+
 </resources>

@@ -67,7 +67,7 @@ public class EinkaufslisteControllerTest {
 
     // Hilfsmethode: einen Essensplan für Tests anlegen
     private int essensplanAnlegen() {
-        Essensplan essensplan = new Essensplan("Test-Essensplan", "2026-11-01", "2026-11-07", 6);
+        Essensplan essensplan = new Essensplan("2026-11-01", "2026-11-07", 6);
         return (int) essensplanVermittler.anlegen(essensplan);
     }
 

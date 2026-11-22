@@ -44,8 +44,8 @@ public class InhaltEssensplanDAOTest {
     }
 
     // Einen Essensplan für die Testdatenbank erstellen
-    private int essensplanErstellen(String titel) {
-        Essensplan essensplan = new Essensplan(titel, "2026-11-01", "2026-11-07", 1);
+    private int essensplanErstellen() {
+        Essensplan essensplan = new Essensplan("2026-11-01", "2026-11-07", 1);
         return (int) essensplanDAO.einfuegen(essensplan);
     }
 
@@ -66,7 +66,7 @@ public class InhaltEssensplanDAOTest {
     // Einen Eintrag speichern und anhand seiner ID abrufen
     @Test
     public void einfuegenUndNachIdAbrufen() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Gulasch");
         InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, "2026-11-02", 2, 2);
         long id = inhaltEssensplanDAO.einfuegen(inhalt);
@@ -79,7 +79,7 @@ public class InhaltEssensplanDAOTest {
     // Einen vorhandenen Eintrag aktualisieren
     @Test
     public void aktualisieren() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Gerstensuppe");
         InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         inhalt.setDatum("2026-11-03");
@@ -92,7 +92,7 @@ public class InhaltEssensplanDAOTest {
     // Einen vorhandenen Eintrag löschen
     @Test
     public void loeschen() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Kürbissuppe");
         InhaltEssensplan inhalt = inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         int anzahl = inhaltEssensplanDAO.loeschen(inhalt);
@@ -103,7 +103,7 @@ public class InhaltEssensplanDAOTest {
     // Alle Einträge chronologisch sortiert abrufen
     @Test
     public void alleAbrufenSortiertNachEssensplanUndDatum() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId1 = rezeptErstellen("Kartoffelsuppe");
         int rezeptId2 = rezeptErstellen("Apfelpfannkuchen");
         inhaltErstellen(essensplanId, rezeptId1, "2026-11-05", 2);
@@ -117,8 +117,8 @@ public class InhaltEssensplanDAOTest {
     // Nur die Einträge des ausgewählten Essensplans abrufen
     @Test
     public void nachEssensplanIdAbrufen() {
-        int essensplanId1 = essensplanErstellen("Wochenplan 1");
-        int essensplanId2 = essensplanErstellen("Wochenplan 2");
+        int essensplanId1 = essensplanErstellen();
+        int essensplanId2 = essensplanErstellen();
         int rezeptId1 = rezeptErstellen("Kartoffelsuppe");
         int rezeptId2 = rezeptErstellen("Apfelpfannkuchen");
         inhaltErstellen(essensplanId1, rezeptId1, "2026-11-02", 2);
@@ -135,7 +135,7 @@ public class InhaltEssensplanDAOTest {
     // Einträge für ein bestimmtes Datum abrufen
     @Test
     public void nachDatumAbrufen() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId1 = rezeptErstellen("Gulasch");
         int rezeptId2 = rezeptErstellen("Kartoffelsalat");
         inhaltErstellen(essensplanId, rezeptId1, "2026-11-02", 2);
@@ -156,7 +156,7 @@ public class InhaltEssensplanDAOTest {
     // Dasselbe Rezept kann mehrfach am selben Tag eingeplant werden
     @Test
     public void mehrfachesEinplanenDesGleichenRezeptsAmGleichenTagIstMoeglich() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Gulasch");
         inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
@@ -171,7 +171,7 @@ public class InhaltEssensplanDAOTest {
     // Beim Löschen eines Essensplans dessen Einträge mitlöschen
     @Test
     public void loeschenEssensplanLoeschtZugehoerigeInhalte() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Gulasch");
         inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         Essensplan essensplan = essensplanDAO.nachIdAbrufen(essensplanId);
@@ -183,7 +183,7 @@ public class InhaltEssensplanDAOTest {
     // Beim Löschen eines Rezepts dessen Zuordnungen mitlöschen
     @Test
     public void loeschenRezeptLoeschtZugehoerigeInhalte() {
-        int essensplanId = essensplanErstellen("Wochenplan");
+        int essensplanId = essensplanErstellen();
         int rezeptId = rezeptErstellen("Gulasch");
         inhaltErstellen(essensplanId, rezeptId, "2026-11-02", 2);
         Rezept rezept = rezeptDAO.nachIdAbrufen(rezeptId);
