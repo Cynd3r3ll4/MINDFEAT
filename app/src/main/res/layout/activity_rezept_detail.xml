@@ -5,155 +5,165 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/rezeptDetail"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorSurface"
-        android:fillViewport="true"
-        tools:context=".view.activities.RezeptDetailActivity">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <!-- Kopfzeile -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:paddingBottom="24dp">
+            android:layout_height="56dp">
 
-            <!-- Kopfzeile -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/app_name"
-                    style="@style/TextAppearance.Mindfeat.AppTitel" />
-
-                <ImageButton
-                    android:id="@+id/btnRezeptDetailZurueck"
-                    style="@style/Widget.Mindfeat.NavigationIconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/alternativtext_zurueck"
-                    android:src="@drawable/ic_zurueck" />
-
-                <ImageButton
-                    android:id="@+id/btnRezeptDetailStartseite"
-                    style="@style/Widget.Mindfeat.NavigationIconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/alternativtext_rezept_startseite"
-                    android:src="@drawable/ic_home" />
-
-            </LinearLayout>
-
-            <!-- Dynamischer Rezeptname -->
             <TextView
-                android:id="@+id/tvRezeptTitelDetail"
-                style="@style/TextAppearance.Mindfeat.SeitenTitel"
+                android:id="@+id/tvAppTitel"
+                style="@style/TextAppearance.Mindfeat.AppTitel"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                tools:text="Rezepttitel" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:gravity="bottom|center"
+                android:text="@string/app_name" />
 
-            <!-- Rezeptbild -->
-            <ImageView
-                android:id="@+id/ivRezeptBildDetail"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="-24dp"
-                android:layout_marginEnd="-24dp"
-                android:contentDescription="@string/alternativtext_rezept_bild"
-                android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+            <ImageButton
+                android:id="@+id/btnRezeptDetailStartseite"
+                style="@style/Widget.Mindfeat.NavigationIconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                android:contentDescription="@string/alternativtext_rezept_startseite"
+                android:src="@drawable/ic_home" />
 
-            <!-- Kategorien und Rezeptaktionen -->
+            <ImageButton
+                android:id="@+id/btnRezeptDetailZurueck"
+                style="@style/Widget.Mindfeat.NavigationIconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|center_vertical"
+                android:contentDescription="@string/alternativtext_zurueck"
+                android:src="@drawable/ic_zurueck" />
+
+        </FrameLayout>
+
+        <ScrollView
+            android:id="@+id/rezeptDetail"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?attr/colorSurface"
+            android:fillViewport="true"
+            tools:context=".view.activities.RezeptDetailActivity">
+
             <LinearLayout
-                android:id="@+id/layoutKategorienAktionen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="24dp">
 
-                <!-- Kategorien -->
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgRezeptKategorien"
-                    android:layout_width="0dp"
+                <!-- Dynamischer Rezeptname -->
+                <TextView
+                    android:id="@+id/tvRezeptTitelDetail"
+                    style="@style/TextAppearance.Mindfeat.SeitenTitel"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    tools:text="Rezepttitel" />
 
-                <!-- Rezeptaktionen -->
-                <ImageButton
-                    android:id="@+id/btnRezeptAktionen"
-                    android:layout_width="40dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="top"
-                    android:src="@drawable/ic_punkte"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/alternativtext_rezept_aktion"
-                    android:scaleType="fitCenter"
-                    app:tint="?attr/colorPrimary" />
+                <!-- Rezeptbild -->
+                <ImageView
+                    android:id="@+id/ivRezeptBildDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="-24dp"
+                    android:layout_marginEnd="-24dp"
+                    android:contentDescription="@string/alternativtext_rezept_bild"
+                    android:scaleType="centerCrop"
+                    android:src="@android:drawable/ic_menu_gallery" />
 
-            </LinearLayout>
+                <!-- Kategorien und Rezeptaktionen -->
+                <LinearLayout
+                    android:id="@+id/layoutKategorienAktionen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-            <!-- Zutatenüberschrift und Portionen -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                    <!-- Kategorien -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cgRezeptKategorien"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
+                    <!-- Rezeptaktionen -->
+                    <ImageButton
+                        android:id="@+id/btnRezeptAktionen"
+                        android:layout_width="40dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="top"
+                        android:src="@drawable/ic_punkte"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/alternativtext_rezept_aktion"
+                        android:scaleType="fitCenter"
+                        app:tint="?attr/colorPrimary" />
+
+                </LinearLayout>
+
+                <!-- Zutatenüberschrift und Portionen -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.Mindfeat.LabelSerif"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/zutaten" />
+
+                    <TextView
+                        android:id="@+id/tvRezeptPortionen"
+                        style="@style/TextAppearance.Mindfeat.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Für 2 Portionen" />
+
+                </LinearLayout>
+
+                <!-- Zutaten werden dynamisch aus Room eingefügt -->
+                <LinearLayout
+                    android:id="@+id/llRezeptZutaten"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- Arbeitsschritte -->
                 <TextView
                     style="@style/TextAppearance.Mindfeat.LabelSerif"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/zutaten" />
+                    android:layout_marginTop="24dp"
+                    android:text="@string/arbeitsschritte" />
 
-                <TextView
-                    android:id="@+id/tvRezeptPortionen"
-                    style="@style/TextAppearance.Mindfeat.Body"
-                    android:layout_width="wrap_content"
+                <!-- Arbeitsschritte werden dynamisch aus Room eingefügt -->
+                <LinearLayout
+                    android:id="@+id/llRezeptZubereitung"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="Für 2 Portionen" />
+                    android:orientation="vertical" />
 
             </LinearLayout>
 
-            <!-- Zutaten werden dynamisch aus Room eingefügt -->
-            <LinearLayout
-                android:id="@+id/llRezeptZutaten"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+        </ScrollView>
 
-            <!-- Arbeitsschritte -->
-            <TextView
-                style="@style/TextAppearance.Mindfeat.LabelSerif"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/arbeitsschritte" />
-
-            <!-- Arbeitsschritte werden dynamisch aus Room eingefügt -->
-            <LinearLayout
-                android:id="@+id/llRezeptZubereitung"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </LinearLayout>
 
     <!-- Overlay für Lösch-Bestätigung (100% Edge-to-Edge direkt in der Activity) -->
     <include

@@ -17,39 +17,38 @@
         android:paddingBottom="24dp">
 
     <!-- Kopfzeile wie in der Rezeptübersicht -->
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="56dp">
 
         <TextView
             android:id="@+id/tvAppTitel"
             style="@style/TextAppearance.Mindfeat.AppTitel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:gravity="bottom|center"
             android:text="@string/app_name" />
-
-        <ImageButton
-            android:id="@+id/btnRezeptErstellenZurueck"
-            style="@style/Widget.Mindfeat.NavigationIconButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@string/alternativtext_zurueck"
-            android:src="@drawable/ic_zurueck" />
 
         <ImageButton
             android:id="@+id/btnRezeptErstellenStartseite"
             style="@style/Widget.Mindfeat.NavigationIconButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
             android:contentDescription="@string/alternativtext_rezept_startseite"
             android:src="@drawable/ic_home" />
 
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/btnRezeptErstellenZurueck"
+            style="@style/Widget.Mindfeat.NavigationIconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/alternativtext_zurueck"
+            android:src="@drawable/ic_zurueck" />
+
+    </FrameLayout>
 
     <!-- Seitenüberschrift wie in der Rezeptübersicht -->
     <TextView

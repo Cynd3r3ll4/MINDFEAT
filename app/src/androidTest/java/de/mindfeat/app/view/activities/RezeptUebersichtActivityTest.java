@@ -51,6 +51,7 @@ public class RezeptUebersichtActivityTest {
                 assertNotNull(activity.findViewById(R.id.etRezeptSuche));
                 assertNotNull(activity.findViewById(R.id.rvRezepte));
                 assertNotNull(activity.findViewById(R.id.btnRezeptStartseite));
+                assertNotNull(activity.findViewById(R.id.btnRezeptUebersichtZurueck));
                 assertNotNull(activity.findViewById(R.id.btnRezeptHinzufuegen));
             });
         }

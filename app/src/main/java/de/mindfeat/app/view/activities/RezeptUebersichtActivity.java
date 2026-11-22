@@ -115,6 +115,7 @@ public class RezeptUebersichtActivity extends AppCompatActivity {
     // Navigation zurück zur Startseite
     private void navigationEinrichten() {
         findViewById(R.id.btnRezeptStartseite).setOnClickListener(v -> finish());
+        findViewById(R.id.btnRezeptUebersichtZurueck).setOnClickListener(v -> finish());
         findViewById(R.id.btnRezeptHinzufuegen).setOnClickListener(v -> {
             Intent intent = new Intent(RezeptUebersichtActivity.this, RezeptErstellenActivity.class);
             startActivity(intent);});
