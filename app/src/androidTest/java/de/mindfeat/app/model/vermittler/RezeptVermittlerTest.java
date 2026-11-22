@@ -23,6 +23,8 @@ import de.mindfeat.app.model.datengrundlage.dao.RezeptZutatDAO;
 import de.mindfeat.app.model.datengrundlage.TestDatenbank;
 import de.mindfeat.app.model.datengrundlage.dao.ZubereitungsschrittDAO;
 import de.mindfeat.app.model.datengrundlage.dao.ZutatDAO;
+import de.mindfeat.app.model.datengrundlage.entitaeten.Essensplan;
+import de.mindfeat.app.model.datengrundlage.entitaeten.InhaltEssensplan;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Kategorie;
 import de.mindfeat.app.model.datengrundlage.entitaeten.Rezept;
 import de.mindfeat.app.model.datengrundlage.entitaeten.RezeptZutat;
@@ -311,5 +313,25 @@ public class RezeptVermittlerTest {
         long id = zutatDAO.einfuegen(zutat);
         zutat.setId((int) id);
         return zutat;
+    }
+
+    // Beim Löschen eines Rezepts werden auch seine Essensplaneinträge entfernt.
+    @Test
+    public void rezeptLoeschenEntferntZugehoerigeEssensplaneintraege() {
+        Rezept rezept = new Rezept("Kartoffelsuppe", null, 2);
+        int rezeptId = rezeptVermittler.anlegen(rezept,
+                Collections.singletonList(new RezeptVermittler.ZutatAngabe("Kartoffeln", 500, "g")),
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+        Essensplan essensplan = new Essensplan("Testplan", "2026-01-01", "2026-01-07", 1);
+        int essensplanId = (int) testDatenbank.getDatenbank().essensplanDAO().einfuegen(essensplan);
+        InhaltEssensplan inhalt = new InhaltEssensplan(essensplanId, rezeptId, "2026-01-01", 2, 2);
+        int inhaltId = (int) testDatenbank.getDatenbank().inhaltEssensplanDAO().einfuegen(inhalt);
+        assertNotNull(testDatenbank.getDatenbank().inhaltEssensplanDAO().nachIdAbrufen(inhaltId));
+        boolean geloescht = rezeptVermittler.loeschen(rezeptId);
+        assertTrue(geloescht);
+        assertNull(testDatenbank.getDatenbank().inhaltEssensplanDAO().nachIdAbrufen(inhaltId));
+        assertNotNull(testDatenbank.getDatenbank().essensplanDAO().nachIdAbrufen(essensplanId));
     }
 }
