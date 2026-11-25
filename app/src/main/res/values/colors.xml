@@ -5,4 +5,6 @@
     <color name="mindfeat_beige">#EFE7DD</color>
     <color name="mindfeat_red">#BD4739</color>
     <color name="mindfeat_green">#78866A</color>
+    <color name="mindfeat_ausgewaehlt">#713516</color>
+    <color name="mindfeat_ausgewaehlt_hell">#C5A68D</color>
 </resources>

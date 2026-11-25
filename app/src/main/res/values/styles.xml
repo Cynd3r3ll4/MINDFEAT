@@ -55,35 +55,26 @@
     </style>
 
     <!-- Buttons (allgemein) -->
-    <style name="Widget.Mindfeat.Button" parent="Widget.Material3.Button">
+    <style name="Widget.Mindfeat.Button" parent="Widget.Material3.Button.ElevatedButton">
         <item name="cornerRadius">10dp</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <!-- Buttons (braun) -->
-    <style name="Widget.Mindfeat.Button.Brown" parent="Widget.Material3.Button">
-        <item name="cornerRadius">10dp</item>
+        <item name="elevation">3dp</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
         <item name="backgroundTint">@color/mindfeat_brown</item>
         <item name="android:textColor">@color/mindfeat_beige</item>
     </style>
 
+    <!-- Buttons (braun) -->
+    <style name="Widget.Mindfeat.Button.Brown" parent="Widget.Mindfeat.Button" />
+
     <!-- Buttons (rot) -->
-    <style name="Widget.Mindfeat.Button.Red" parent="Widget.Material3.Button">
-        <item name="cornerRadius">10dp</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:textStyle">bold</item>
+    <style name="Widget.Mindfeat.Button.Red" parent="Widget.Mindfeat.Button">
         <item name="backgroundTint">@color/mindfeat_red</item>
         <item name="android:textColor">@color/mindfeat_beige</item>
     </style>
 
     <!-- Buttons (grün) -->
-    <style name="Widget.Mindfeat.Button.Green" parent="Widget.Material3.Button">
-        <item name="cornerRadius">10dp</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:textStyle">bold</item>
+    <style name="Widget.Mindfeat.Button.Green" parent="Widget.Mindfeat.Button">
         <item name="backgroundTint">@color/mindfeat_green</item>
         <item name="android:textColor">@color/mindfeat_beige</item>
     </style>
@@ -102,8 +93,7 @@
     </style>
 
     <!-- Eingabefeld: äußere Fläche mit leichtem Schatten -->
-    <style name="Widget.Mindfeat.FeldContainer"
-        parent="Widget.Material3.CardView.Filled">
+    <style name="Widget.Mindfeat.FeldContainer" parent="Widget.Material3.CardView.Filled">
         <item name="cardCornerRadius">10dp</item>
         <item name="cardElevation">3dp</item>
         <item name="strokeWidth">0dp</item>
@@ -135,7 +125,7 @@
         <item name="android:padding">4dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:tint">?attr/colorOnPrimary</item>
-        <item name="android:elevation">2dp</item>
+        <item name="android:elevation">3dp</item>
     </style>
 
 
@@ -149,11 +139,21 @@
 
     <!-- Nummerierung der Zubereitungsschritte -->
     <style name="TextAppearance.Mindfeat.DetailNummer">
-        <item name="android:fontFamily">@font/notoserifdisplay_variablefont_wdth_wght</item>
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
         <item name="android:textSize">26sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?attr/colorSurface</item>
     </style>
 
+    <!-- Theme-Overlay für den MINDFEAT-Kalender -->
+    <style name="ThemeOverlay.Mindfeat.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorSurfaceContainer">?attr/colorSurface</item>
+        <item name="colorSurfaceContainerHigh">?attr/colorSurface</item>
+        <item name="colorSurfaceContainerHighest">?attr/colorSurface</item>
+        <item name="colorOnSurfaceVariant">?attr/colorOnSurface</item>
+        <item name="android:fontFamily">@font/montserrat_variablefont_wght</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
 </resources>

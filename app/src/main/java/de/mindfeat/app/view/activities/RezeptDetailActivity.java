@@ -94,6 +94,10 @@ public class RezeptDetailActivity extends AppCompatActivity {
         tvRezeptPortionen = findViewById(R.id.tvRezeptPortionen);
         llRezeptZutaten = findViewById(R.id.llRezeptZutaten);
         llRezeptZubereitung = findViewById(R.id.llRezeptZubereitung);
+        if (llRezeptZubereitung != null) {
+            llRezeptZubereitung.setClipChildren(false);
+            llRezeptZubereitung.setClipToPadding(false);
+        }
     }
 
     private void navigationEinrichten() {
@@ -235,19 +239,22 @@ public class RezeptDetailActivity extends AppCompatActivity {
         LinearLayout zeile = new LinearLayout(this);
         zeile.setOrientation(LinearLayout.HORIZONTAL);
         zeile.setGravity(Gravity.TOP);
+        zeile.setClipChildren(false);
+        zeile.setClipToPadding(false);
         LinearLayout.LayoutParams zeilenParameter = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         zeilenParameter.bottomMargin = dp(16);
         zeile.setLayoutParams(zeilenParameter);
-        FrameLayout nummerAnsicht = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.arbeitsschritt_nummer, zeile, false);
+        FrameLayout nummerAnsicht = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.dynamische_buttons, zeile, false);
         TextView nummerText = nummerAnsicht.findViewById(R.id.tvSchrittNummer);
         nummerText.setText(String.valueOf(nummer));
         nummerText.getPaint().setFakeBoldText(true);
         LinearLayout.LayoutParams nummerParameter = new LinearLayout.LayoutParams(dp(44), dp(44));
+        nummerParameter.setMargins(dp(2), dp(2), dp(2), dp(2));
         nummerAnsicht.setLayoutParams(nummerParameter);
         TextView beschreibungText = textAnsichtErstellen(beschreibung);
         beschreibungText.setGravity(Gravity.TOP);
         LinearLayout.LayoutParams beschreibungParameter = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        beschreibungParameter.leftMargin = dp(12);
+        beschreibungParameter.leftMargin = dp(10);
         beschreibungText.setLayoutParams(beschreibungParameter);
         zeile.addView(nummerAnsicht);
         zeile.addView(beschreibungText);

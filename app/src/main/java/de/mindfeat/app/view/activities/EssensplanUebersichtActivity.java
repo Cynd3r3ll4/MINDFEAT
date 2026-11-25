@@ -1,5 +1,6 @@
 package de.mindfeat.app.view.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -135,6 +136,8 @@ public class EssensplanUebersichtActivity extends AppCompatActivity {
     private void navigationEinrichten() {
         findViewById(R.id.btnEssensplanStartseite).setOnClickListener(v -> finish());
         findViewById(R.id.btnEssensplanUebersichtZurueck).setOnClickListener(v -> finish());
+        findViewById(R.id.btnEssensplanHinzufuegen).setOnClickListener(v -> {
+                    Intent intent = new Intent(EssensplanUebersichtActivity.this, EssensplanErstellenActivity.class);startActivity(intent);});
     }
 
     // Berücksichtigung der Systemleisten bei Edge-to-Edge

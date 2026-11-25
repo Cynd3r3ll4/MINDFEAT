@@ -21,6 +21,7 @@
     <string name="alternativtext_rezept_bild">Rezeptbild</string>
 
     <string name="rezept_bearbeiten">Rezept bearbeiten</string>
+    <string name="rezept_auswaehlen">Rezept auswählen</string>
 
     <string name="rezept_erstellen">Rezept erstellen</string>
     <string name="rezept_titel">Titel</string>
@@ -82,5 +83,29 @@
     <string name="essensplan_suche_platzhalter">Datum oder Zeitraum…</string>
     <string name="alternativtext_essensplan_hinzufuegen">Essensplan hinzufügen</string>
     <string name="alternativtext_essensplan_kalender">Kalendersymbol für den Essensplan</string>
+
+    <string name="essensplan_erstellen">Essensplan erstellen</string>
+    <string name="essensplan_zeitraum">Zeitraum</string>
+    <string name="essensplan_vom">vom:</string>
+    <string name="essensplan_bis">bis:</string>
+    <string name="essensplan_datum_auswaehlen">TT.MM.JJJJ</string>
+    <string name="essensplan_startdatum_waehlen">Startdatum auswählen</string>
+    <string name="essensplan_enddatum_waehlen">Enddatum auswählen</string>
+    <string name="essensplan_wochenstart">Wochenbeginn</string>
+    <string name="essensplan_start">Start</string>
+    <string name="essensplan_fehler_zeitraum">Das Enddatum darf nicht vor dem Startdatum liegen.</string>
+
+    <plurals name="essensplan_dauer_tage">
+        <item quantity="one">%d Tag</item>
+        <item quantity="other">%d Tage</item>
+    </plurals>
+
+    <string name="essensplan_montag">Mo</string>
+    <string name="essensplan_dienstag">Di</string>
+    <string name="essensplan_mittwoch">Mi</string>
+    <string name="essensplan_donnerstag">Do</string>
+    <string name="essensplan_freitag">Fr</string>
+    <string name="essensplan_samstag">Sa</string>
+    <string name="essensplan_sonntag">So</string>
 
 </resources>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/essensplanErstellen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:fillViewport="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    tools:context=".view.activities.EssensplanErstellenActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="4dp"
+        android:paddingBottom="24dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <!-- Kopfzeile -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <TextView
+                style="@style/TextAppearance.Mindfeat.AppTitel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:text="@string/app_name" />
+
+            <ImageButton
+                android:id="@+id/btnEssensplanErstellenStartseite"
+                style="@style/Widget.Mindfeat.NavigationIconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                android:contentDescription="@string/alternativtext_rezept_startseite"
+                android:src="@drawable/ic_home" />
+
+            <ImageButton
+                android:id="@+id/btnEssensplanErstellenZurueck"
+                style="@style/Widget.Mindfeat.NavigationIconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|center_vertical"
+                android:contentDescription="@string/alternativtext_zurueck"
+                android:src="@drawable/ic_zurueck" />
+
+        </FrameLayout>
+
+        <!-- Seitenüberschrift -->
+        <TextView
+            style="@style/TextAppearance.Mindfeat.SeitenTitel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/essensplan_erstellen" />
+
+        <!-- Formularinhalt -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Zeitraum -->
+            <TextView
+                style="@style/TextAppearance.Mindfeat.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/essensplan_zeitraum" />
+
+            <!-- Startdatum -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <TextView
+                    style="@style/TextAppearance.Mindfeat"
+                    android:layout_width="52dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/essensplan_vom" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Mindfeat.FeldContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp">
+
+                    <EditText
+                        android:id="@+id/tvEssensplanStartDatum"
+                        style="@style/Widget.Mindfeat.FeldEingabe"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:hint="@string/essensplan_datum_auswaehlen"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:paddingStart="12dp"
+                        android:singleLine="true"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageButton
+                    android:id="@+id/btnStartDatumWaehlen"
+                    style="@style/Widget.Mindfeat.AktionsIconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/essensplan_startdatum_waehlen"
+                    android:src="@drawable/ic_essensplan_kalender" />
+
+            </LinearLayout>
+
+            <!-- Enddatum -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <TextView
+                    style="@style/TextAppearance.Mindfeat"
+                    android:layout_width="52dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/essensplan_bis" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Mindfeat.FeldContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp">
+
+                    <EditText
+                        android:id="@+id/tvEssensplanEndDatum"
+                        style="@style/Widget.Mindfeat.FeldEingabe"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:hint="@string/essensplan_datum_auswaehlen"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:paddingStart="12dp"
+                        android:singleLine="true"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageButton
+                    android:id="@+id/btnEndDatumWaehlen"
+                    style="@style/Widget.Mindfeat.AktionsIconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/essensplan_enddatum_waehlen"
+                    android:src="@drawable/ic_essensplan_kalender" />
+
+            </LinearLayout>
+
+            <!-- Dauer -->
+            <TextView
+                android:id="@+id/tvEssensplanDauer"
+                style="@style/TextAppearance.Mindfeat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:text="" />
+
+        </LinearLayout>
+
+        <!-- Dynamisch erzeugte Tagesliste -->
+        <LinearLayout
+            android:id="@+id/layoutEssensplanTage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false" />
+
+            <!-- Abbrechen und Speichern -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <Button
+                    android:id="@+id/btnEssensplanAbbrechen"
+                    style="@style/Widget.Mindfeat.Button.Red"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/abbrechen" />
+
+                <Button
+                    android:id="@+id/btnEssensplanSpeichern"
+                    style="@style/Widget.Mindfeat.Button.Green"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/speichern" />
+
+            </LinearLayout>
+    </LinearLayout>
+</ScrollView>
